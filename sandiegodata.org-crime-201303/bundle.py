@@ -36,33 +36,7 @@ class Bundle(BuildBundle):
         else:
             return self.array_cache[name]
  
-    def load_datasets(self, aa):
-        '''Load data from the database into cached numpy arrays'''
-        
-        from databundles.geo import Point     
-        from databundles.geo.kernel import GaussianKernel   
 
-        trans = aa.get_translator()
-        
-        r = self.library.dep('crime')
-
-        kernel =  GaussianKernel(33,11)
-                
-        q = self.config.build.incident_query.format(**aa.__dict__)
-
-        for i,row in enumerate(r.bundle.database.connection.execute(q)):
-            
-            if (i)%500 == 0 and i > 0:
-                self.log("Loaded {} rows".format(i))
-                if self.run_args.test:
-                    self.log("IN TEST MODE, BREAKING FROM LOADING LOOP")
-                    break
-            
-            point = trans(row['longitude'], row['latitude'])
-
-            a = self.get_array_by_type(aa, row['type'])
-            
-            kernel.apply_add(a,point) 
 
     def merge_datasets(self, aa):
         """Create combined datasets from the sets of types defined in the
@@ -94,11 +68,25 @@ class Bundle(BuildBundle):
     def build(self):
         '''
         '''
+        import databundles.library as dl
+        import databundles.geo as dg
+        import  random 
         
-        from databundles.geo.analysisarea import get_analysis_area
-        aa = get_analysis_area(self.library, geoid = self.config.build.aa_geoid)    
+        rs = 3
+    
+        l = dl.get_library()
+        aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
+        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
+        source_partition = l.get(r.partition).partition
+
+        k = dg.GaussianKernel(33,11)
         
-        self.load_datasets(aa)
+        for row in source_partition.query("select date, time, cellx, celly, type  from incidents"):
+            p = dg.Point(row['cellx']+random.randint(-rs, rs),
+                         row['celly']+random.randint(-rs, rs))
+            a = self.get_array_by_type(aa, row['type'])
+            k.apply_add(a, p)
+            
         self.merge_datasets(aa)
         self.save_datasets(aa)
 
@@ -134,7 +122,153 @@ class Bundle(BuildBundle):
         hdf.close()
         
         return file_name
-                     
+                   
+    def contours(self):
+        import databundles.geo as dg
+        from osgeo.gdalconst import GDT_Float32
+        from numpy import ma
+        import tempfile,os
+        
+        from osgeo import gdal
+        import ogr
+        
+        partition = self.partitions.all[0]# There is only one
+        hdf = partition.hdf5file
+        hdf.open()
+        
+        a1,aa = hdf.get_geo('Property')
+        a2,aa = hdf.get_geo('Violent')
+        
+        a = dg.std_norm(ma.masked_equal(a1[...] + a2[...],0))   # ... Converts to a Numpy array. 
+        
+        shaped = self.filesystem.path('extracts','contour')
+        
+        if os.path.exists(shaped):
+            self.filesystem.rm_rf(shaped)
+            os.makedirs(shaped)
+        
+        rasterf = self.filesystem.path('extracts','contour.tiff')
+        
+        print "!!!", shaped
+        
+        ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource(shaped)
+        
+        ogr_lyr = ogr_ds.CreateLayer('contour', aa.srs)
+        field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
+        ogr_lyr.CreateField(field_defn)
+        field_defn = ogr.FieldDefn('elev', ogr.OFTReal)
+        ogr_lyr.CreateField(field_defn)
+        
+        ds = aa.get_geotiff(rasterf,  a, type_=GDT_Float32)
+        ds.GetRasterBand(1).SetNoDataValue(0)
+        ds.GetRasterBand(1).WriteArray(a)
+        
+        gdal.ContourGenerate(ds.GetRasterBand(1), 
+                             0.1,  # contourInterval
+                             0,   # contourBase
+                             [],  # fixedLevelCount
+                             0, # useNoData
+                             0, # noDataValue
+                             ogr_lyr, #destination layer
+                             0,  #idField
+                             1 # elevation field
+                             )
+        
+        
+        
+        print "Shape  : ",shaped
+        print "Raster : ",rasterf   
+ 
+        # Get buffered bounding boxes around each of the hotspots, 
+        # and put them into a new layer. 
+ 
+        bound_lyr = ogr_ds.CreateLayer('bounds', aa.srs)
+        for i in range(ogr_lyr.GetFeatureCount()):
+            f1 = ogr_lyr.GetFeature(i)
+            if f1.GetFieldAsDouble('elev') != 0.7:
+                continue
+            g1 = f1.GetGeometryRef()
+            bb = dg.create_bb(g1.GetEnvelope(), g1.GetSpatialReference())
+            f = ogr.Feature(bound_lyr.GetLayerDefn())
+            f.SetGeometry(bb)
+            bound_lyr.CreateFeature(f)
+            
+    
+        # Doing a full loop instead of a list comprehension b/c the way that comprehensions
+        # compose arrays results in segfaults, probably because a copied geometry
+        # object is being released before being used. 
+        geos = []
+        for i in range(bound_lyr.GetFeatureCount()):
+            f = bound_lyr.GetFeature(i)
+            g = f.geometry()
+            geos.append(g.Clone())
+    
+
+        geos = self.combine_envelopes(geos) 
+     
+        lyr = ogr_ds.CreateLayer('combined_bounds', aa.srs)
+        for env in geos:
+            f = ogr.Feature(lyr.GetLayerDefn())
+            bb = dg.create_bb(env.GetEnvelope(), env.GetSpatialReference())
+            f.SetGeometry(bb)
+            lyr.CreateFeature(f)                   
+          
+    def combine_envelopes(self, geos):
+        loops = 0   
+        while True: 
+            i, new_geos = self._combine_envelopes(geos)
+            old = len(geos)
+            geos = None
+            geos = [g.Clone() for g in new_geos]
+            loops += 1
+            print "{}) {} reductions. {} old, {} new".format(loops, i, old, len(geos))
+            if old == len(geos):
+                break
+          
+        return geos
+          
+    def _combine_envelopes(self, geometries):
+        import databundles.geo as dg
+        reductions = 0
+        new_geometries = []
+        
+        accum = None
+        reduced = set()
+
+        for i1 in range(len(geometries)):
+            if i1 in reduced:
+                continue
+            g1 = geometries[i1]
+            for i2 in range(i1+1, len(geometries)):
+                if i2 in reduced:
+                    continue
+
+                g2 = geometries[i2]
+
+                # Why we have to do the bounding box check is a mystery -- 
+                # there are some geometries that look like they overlay, but Intersects() 
+                # returns false. 
+                bb1 =  dg.create_bb(g1.GetEnvelope(), g1.GetSpatialReference())
+                bb2 =  dg.create_bb(g2.GetEnvelope(), g2.GetSpatialReference())
+   
+                if (g1.Intersects(g2) or  g1.Contains(g2) or g2.Contains(g1) or g1.Touches(g2) or
+                   bb1.Intersects(bb2)):
+                    reductions += 1
+                    reduced.add(i2)
+                    if not accum:
+                        accum = g1.Union(g2)
+                    else:
+                        accum = accum.Union(g2)
+            
+            if accum is not None:
+                new_geometries.append(accum.Clone())
+                accum = None
+            else:
+                new_geometries.append(g1.Clone())
+
+        return reductions, new_geometries
+                  
+    
     def extract_sum_image(self, data, file_=None):  
         """List extract_image, but will sum multiple atasets together
         to form the image. """
@@ -208,20 +342,6 @@ class Bundle(BuildBundle):
         
         return file_name
 
-    def test_mask(self):
-        import numpy as np
-        from numpy import  ma
-        
-        a = np.arange(100).reshape(10,10)
-        m = ma.masked_less(a, 50)
-        
-        print m
-        
-        m.set_fill_value(0)
-        
-        print ma.filled(m)
-
-        
         
         
     
@@ -231,7 +351,8 @@ class Bundle(BuildBundle):
         
         Run with: python bundle.py run demo
         '''
-        from databundles.geo.analysisarea import get_analysis_area, create_bb,  draw_edges
+        from databundles.geo.analysisarea import get_analysis_area,  draw_edges
+        from databundles.geo.util import create_bb
         from databundles.geo import Point
         from databundles.geo.kernel import GaussianKernel
         from databundles.geo.array import statistics, unity_norm, std_norm

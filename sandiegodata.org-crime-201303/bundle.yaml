@@ -16,7 +16,7 @@ about:
     - gov-crime
     title: San Diego Crime Analysis
 build:
-    aa_geoid: '0666000'
+    aa_geoid: CG0666000
     crime_merges:
         Other:
         - Arrest
@@ -30,8 +30,7 @@ build:
         Violent:
         - Assault
         - Shooting
-    incident_query: select  * from incidents where latitude > {latmin} and latitude
-        < {latmax} and longitude > {lonmin} and longitude < {lonmax}
+
     dependencies:
         crime: clarinova.com-us_crime_incidents-state-7ba4-ca.incidents
         lamps: sangis.org-street_lights-orig-7ba4-street_lights
