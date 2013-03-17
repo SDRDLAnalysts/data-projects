@@ -122,153 +122,96 @@ class Bundle(BuildBundle):
         hdf.close()
         
         return file_name
-                   
-    def contours(self):
+   
+    def contour_bounds(self):
         import databundles.geo as dg
-        from osgeo.gdalconst import GDT_Float32
         from numpy import ma
-        import tempfile,os
-        
-        from osgeo import gdal
-        import ogr
-        
+        import yaml
+
         partition = self.partitions.all[0]# There is only one
         hdf = partition.hdf5file
         hdf.open()
         
-        a1,aa = hdf.get_geo('Property')
+        a1,_ = hdf.get_geo('Property')
         a2,aa = hdf.get_geo('Violent')
         
         a = dg.std_norm(ma.masked_equal(a1[...] + a2[...],0))   # ... Converts to a Numpy array. 
-        
-        shaped = self.filesystem.path('extracts','contour')
-        
-        if os.path.exists(shaped):
-            self.filesystem.rm_rf(shaped)
-            os.makedirs(shaped)
-        
-        rasterf = self.filesystem.path('extracts','contour.tiff')
-        
-        print "!!!", shaped
-        
-        ogr_ds = ogr.GetDriverByName('ESRI Shapefile').CreateDataSource(shaped)
-        
-        ogr_lyr = ogr_ds.CreateLayer('contour', aa.srs)
-        field_defn = ogr.FieldDefn('ID', ogr.OFTInteger)
-        ogr_lyr.CreateField(field_defn)
-        field_defn = ogr.FieldDefn('elev', ogr.OFTReal)
-        ogr_lyr.CreateField(field_defn)
-        
-        ds = aa.get_geotiff(rasterf,  a, type_=GDT_Float32)
-        ds.GetRasterBand(1).SetNoDataValue(0)
-        ds.GetRasterBand(1).WriteArray(a)
-        
-        gdal.ContourGenerate(ds.GetRasterBand(1), 
-                             0.1,  # contourInterval
-                             0,   # contourBase
-                             [],  # fixedLevelCount
-                             0, # useNoData
-                             0, # noDataValue
-                             ogr_lyr, #destination layer
-                             0,  #idField
-                             1 # elevation field
-                             )
-        
-        
-        
-        print "Shape  : ",shaped
-        print "Raster : ",rasterf   
- 
-        # Get buffered bounding boxes around each of the hotspots, 
-        # and put them into a new layer. 
- 
-        bound_lyr = ogr_ds.CreateLayer('bounds', aa.srs)
-        for i in range(ogr_lyr.GetFeatureCount()):
-            f1 = ogr_lyr.GetFeature(i)
-            if f1.GetFieldAsDouble('elev') != 0.7:
-                continue
-            g1 = f1.GetGeometryRef()
-            bb = dg.create_bb(g1.GetEnvelope(), g1.GetSpatialReference())
-            f = ogr.Feature(bound_lyr.GetLayerDefn())
-            f.SetGeometry(bb)
-            bound_lyr.CreateFeature(f)
-            
+        shape_file_dir = self.filesystem.path('extracts','contour')
+                           
+        # Creates the shapefile in the extracts/contour directory
+        envelopes = dg.bound_clusters_in_raster( a, aa, shape_file_dir, 0.1,0.7, use_bb=True, use_distance=50)
+  
+        with open(self.filesystem.path('extracts','envelopes.yaml'),'w') as f:
+            f.write(yaml.dump(envelopes, indent=4, default_flow_style=False))
+  
     
-        # Doing a full loop instead of a list comprehension b/c the way that comprehensions
-        # compose arrays results in segfaults, probably because a copied geometry
-        # object is being released before being used. 
-        geos = []
-        for i in range(bound_lyr.GetFeatureCount()):
-            f = bound_lyr.GetFeature(i)
-            g = f.geometry()
-            geos.append(g.Clone())
-    
-
-        geos = self.combine_envelopes(geos) 
-     
-        lyr = ogr_ds.CreateLayer('combined_bounds', aa.srs)
-        for env in geos:
-            f = ogr.Feature(lyr.GetLayerDefn())
-            bb = dg.create_bb(env.GetEnvelope(), env.GetSpatialReference())
-            f.SetGeometry(bb)
-            lyr.CreateFeature(f)                   
-          
-    def combine_envelopes(self, geos):
-        loops = 0   
-        while True: 
-            i, new_geos = self._combine_envelopes(geos)
-            old = len(geos)
-            geos = None
-            geos = [g.Clone() for g in new_geos]
-            loops += 1
-            print "{}) {} reductions. {} old, {} new".format(loops, i, old, len(geos))
-            if old == len(geos):
-                break
-          
-        return geos
-          
-    def _combine_envelopes(self, geometries):
+    def get_sub_aas(self):
+        import yaml
         import databundles.geo as dg
-        reductions = 0
-        new_geometries = []
+        import databundles.library as dl
+        aa = dg.get_analysis_area(dl.get_library(), geoid=self.config.build.aa_geoid)
         
-        accum = None
-        reduced = set()
-
-        for i1 in range(len(geometries)):
-            if i1 in reduced:
-                continue
-            g1 = geometries[i1]
-            for i2 in range(i1+1, len(geometries)):
-                if i2 in reduced:
-                    continue
-
-                g2 = geometries[i2]
-
-                # Why we have to do the bounding box check is a mystery -- 
-                # there are some geometries that look like they overlay, but Intersects() 
-                # returns false. 
-                bb1 =  dg.create_bb(g1.GetEnvelope(), g1.GetSpatialReference())
-                bb2 =  dg.create_bb(g2.GetEnvelope(), g2.GetSpatialReference())
-   
-                if (g1.Intersects(g2) or  g1.Contains(g2) or g2.Contains(g1) or g1.Touches(g2) or
-                   bb1.Intersects(bb2)):
-                    reductions += 1
-                    reduced.add(i2)
-                    if not accum:
-                        accum = g1.Union(g2)
-                    else:
-                        accum = accum.Union(g2)
+        with open(self.filesystem.path('extracts','envelopes.yaml')) as f:
+            envelopes = yaml.load(f)
             
-            if accum is not None:
-                new_geometries.append(accum.Clone())
-                accum = None
-            else:
-                new_geometries.append(g1.Clone())
-
-        return reductions, new_geometries
-                  
+        aas = []
+        for r in envelopes:
+            
+            saa = aa.get_aa_from_envelope(r['env'], '', '')
+            
+            aas.append( (r['area'], saa))
+  
+        aas = sorted(aas, cmp=lambda x,y: cmp(x[0], y[0]), reverse=True)
+        
+        return [aa[1] for aa in aas]
+  
     
+    def build_aa_map(self):
+        '''
+        '''
+        import databundles.library as dl
+        import databundles.geo as dg
+        import random 
+        from numpy import  ma
+        
+        rs = 3
+    
+        # make a helper to store files in the extracts directory
+        ed = lambda f: self.filesystem.path('extracts','subs',f+'.tiff')
+    
+        l = dl.get_library()
+        aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
+        
+        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
+        source_partition = l.get(r.partition).partition
+
+        k = dg.GaussianKernel(33,11)
+        
+        sub_aas = self.get_sub_aas()[0:5]
+        
+        top_a = aa.new_array()
+        for i, sub_aa in enumerate(sub_aas):
+            where = sub_aa.is_in_ll_query()
+            sub_a = sub_aa.new_array()
+            trans = sub_aa.get_translator()
+
+            q = "select date, time, cellx, celly, lat, lon, type from incidents WHERE {}".format(where)
+        
+            for row in source_partition.query(q):
+                p = dg.Point(row['cellx']+random.randint(-rs, rs),
+                             row['celly']+random.randint(-rs, rs))
+                k.apply_add(top_a, p)
+            
+                p = trans(row['lon'],row['lat'])
+                k.apply_add(sub_a, p)
+            
+            sub_aa.write_geotiff(ed(str(i)), dg.std_norm(ma.masked_equal(sub_a,0)))
+            
+            
+        aa.write_geotiff(ed('substest'), dg.std_norm(ma.masked_equal(top_a,0)))            
+      
+        return True
+  
     def extract_sum_image(self, data, file_=None):  
         """List extract_image, but will sum multiple atasets together
         to form the image. """
