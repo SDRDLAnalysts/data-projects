@@ -1,7 +1,10 @@
 about:
     author: San Diego Regional Data Library
     description: Files for analyzing San Degio crime incidents, extracted from the
-        free SpotCrime.com database.
+        free SpotCrime.com database. The resources include a GeoTIFF file in the San
+        Diego analysis area for each of the values of the Type field in the original
+        dataset, as well as the incident point data in a variety of geo formats and
+        CSV.
     documents:
     -   description: SanGIS Terms and Conditions, for the street lamp shapefile.
         title: SanGIS Terms and Conditions
@@ -30,16 +33,35 @@ build:
         Violent:
         - Assault
         - Shooting
-
     dependencies:
         crime: clarinova.com-us_crime_incidents-state-7ba4-ca.incidents
         lamps: sangis.org-street_lights-orig-7ba4-street_lights
 extracts:
-    custom:
-        description: This is a custom extract. Do whatever you want
-        done_if: 'True'
-        function: custom_extract
-        name: custom_extract.tiff
+    colormaps:
+        description: QGIS colormap.
+        each:
+        -   map_name: YlOrRd
+            reversed: false
+            size: 9
+        -   map_name: Spectral
+            reversed: true
+            size: 9
+        function: extract_colormaps
+        name: colors-{map_name}-{size}.txt
+    contours:
+        description: Contours
+        each:
+        -   -   format: kml
+            -   format: sqlite
+            -   format: shapefile
+        function: extract_contour_bounds
+        name: contours_bounds.{format}
+    csv:
+        description: Incident points in CSV format. This is a direct dump of the {partition}
+            partition.
+        name: incidents.csv
+        partition: clarinova.com-spotcrime_incidents-aa-orig-7ba4-incidents.CG0666000
+        query: select * from incidents
     diffs:
         description: A grayscale GeoTIFF heatmap of the difference between the {type1}
             and {type2} datasets
@@ -57,7 +79,9 @@ extracts:
     images:
         description: A grayscale GeoTIFF  heatmap of {type} crime in the San Diego
             area. It is intended for loading into a GIS program, and won't be useful
-            in a general image viewer.
+            in a general image viewer. The cell values are crimes per day per square
+            kilometer, averaged over the analysis period, which is 2007, 2008 and
+            2009.
         done_if: os.path.exists('{path}')
         each:
         -   -   type: Assault
@@ -74,6 +98,16 @@ extracts:
         function: extract_image
         name: sandiego-crime-{type}.tiff
         title: Crime Map, {type}
+    incidentshape:
+        description: Shape file of incident points in {format} format. The file includes
+            attributes for time, date, type, description and address of the incidnets.
+        each:
+        -   -   format: kml
+            -   format: geojson
+            -   format: sqlite
+            -   format: shapefile
+        function: extract_incident_shapefile
+        name: incidents.{format}
 identity:
     creator: eric@sandiegodata.org
     dataset: crime

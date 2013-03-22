@@ -35,13 +35,45 @@ class Bundle(BuildBundle):
             return a 
         else:
             return self.array_cache[name]
- 
 
-
-    def merge_datasets(self, aa):
-        """Create combined datasets from the sets of types defined in the
-        build.crime_merges config group"""
+    def get_incident_source(self):
+        """Return the partition from the dataset that has the incidents"""
+        import databundles.library as dl
+        import databundles.geo as dg
         
+        l = dl.get_library()
+        aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
+        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
+        return  aa, l.get(r.partition).partition
+
+    def build(self):
+        ''' '''
+        
+        import databundles.geo as dg
+        import  random 
+        
+        rs = 5
+    
+        aa, source_partition = self.get_incident_source()
+
+        #k = dg.GaussianKernel(33,11)
+        k = dg.GaussianKernel(41,11)
+
+        #
+        # Create each of the arrays, one per type. 
+        #
+        for row in source_partition.query("select date, time, cellx, celly, type  from incidents"):
+            p = dg.Point(row['cellx']+random.randint(-rs, rs), # Randomness b/c addresses are quantized to street corners. 
+                         row['celly']+random.randint(-rs, rs))
+            p = dg.Point(row['cellx'], row['celly'])
+            
+            a = self.get_array_by_type(aa, row['type'])
+            k.apply_add(a, p)
+            
+        #
+        # Merge datasets. Create the higher-level merged sets, which are
+        # composed of multiple smaller sets. 
+        #
         for name, types in self.config.build.crime_merges.items():
             self.log("Creating merged array {} ".format(name))
             arrays = [ self.get_array_by_type(aa,type) for type in types ]
@@ -50,10 +82,17 @@ class Bundle(BuildBundle):
             
             for a in arrays:
                 out += a
-
-
-    def save_datasets(self, aa):
-        '''Save cached numpy arrays into the HDF5 file'''
+            
+        #
+        # Save the datasets to the HDF5 file, in a partition
+        #
+        
+        # Determine the length of the time period
+        row = source_partition.query("""select julianday(min(date(date))), julianday(max(date(date)))
+        from incidents""").first()
+        days = row[1]-row[0]
+        cell_area = aa.scale**2 # In m^2
+        
         partition = self.partitions.all[0]# There is only one
         partition.hdf5file.open()
                   
@@ -61,41 +100,17 @@ class Bundle(BuildBundle):
     
             self.log("Saving dataset: {}".format(name))
         
-            partition.hdf5file.put_geo(name, a, aa)
+            # Convert numbers to crimes per year per km^2
+            b = a * 1000000 * 365 / cell_area / days
+        
+            partition.hdf5file.put_geo(name, b, aa)
+            
+            print dg.statistics(b)
 
         partition.hdf5file.close()
-            
-    def build(self):
-        '''
-        '''
-        import databundles.library as dl
-        import databundles.geo as dg
-        import  random 
-        
-        rs = 3
-    
-        l = dl.get_library()
-        aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
-        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
-        source_partition = l.get(r.partition).partition
-
-        k = dg.GaussianKernel(33,11)
-        
-        for row in source_partition.query("select date, time, cellx, celly, type  from incidents"):
-            p = dg.Point(row['cellx']+random.randint(-rs, rs),
-                         row['celly']+random.randint(-rs, rs))
-            a = self.get_array_by_type(aa, row['type'])
-            k.apply_add(a, p)
-            
-        self.merge_datasets(aa)
-        self.save_datasets(aa)
 
         return True
-  
-    def custom_extract(self, data):
-        self.log("Custom Extract")
-        pass
-        return False
+
   
     def extract_image(self, data):
         """Save an HDF5 Dataset directly as a geotiff"""
@@ -116,17 +131,24 @@ class Bundle(BuildBundle):
         i,aa = hdf.get_geo(data['type'])
              
         aa.write_geotiff(file_name, 
-                         std_norm(ma.masked_equal(i,0)),  
+                         i[...], #std_norm(ma.masked_equal(i,0)),  
                          type_=GDT_Float32)
 
         hdf.close()
         
         return file_name
-   
-    def contour_bounds(self):
+         
+    def make_contour_bounds_shapefile(self):
         import databundles.geo as dg
         from numpy import ma
         import yaml
+
+
+        shape_file_dir = self.filesystem.path('extracts','contours')
+        shape_file = os.path.join(shape_file_dir, 'contours.shp') # One of two. 
+        
+        if os.path.exists(shape_file):
+            return shape_file_dir
 
         partition = self.partitions.all[0]# There is only one
         hdf = partition.hdf5file
@@ -136,16 +158,54 @@ class Bundle(BuildBundle):
         a2,aa = hdf.get_geo('Violent')
         
         a = dg.std_norm(ma.masked_equal(a1[...] + a2[...],0))   # ... Converts to a Numpy array. 
-        shape_file_dir = self.filesystem.path('extracts','contour')
-                           
+                
         # Creates the shapefile in the extracts/contour directory
         envelopes = dg.bound_clusters_in_raster( a, aa, shape_file_dir, 0.1,0.7, use_bb=True, use_distance=50)
   
-        with open(self.filesystem.path('extracts','envelopes.yaml'),'w') as f:
+        # Cache the envelopes for later. 
+        env_file = self.filesystem.path('build','envelopes.yaml')
+        with open(env_file,'w') as f:
             f.write(yaml.dump(envelopes, indent=4, default_flow_style=False))
   
+        return  shape_file_dir
+  
+    def extract_contour_bounds(self, data):
+        import ogr
+        
+        shape_file = self.make_contour_bounds_shapefile()
+
+        format_map = {
+            'kml': ('KML',[]),
+            'geojson': ('GeoJSON',[]),
+            'sqlite': ('SQLite',[]),
+            'shapefile': ('ESRI Shapefile',('SPATIALITE=YES', 
+                                            'INIT_WITH_EPSG=YES','OGR_SQLITE_SYNCHRONOUS=OFF'))
+        }
+        
+        source_ds = ogr.GetDriverByName('ESRI Shapefile').Open(shape_file)
+        
+        ogr_format, options = format_map[data['format']]
+        
+        file_name = self.filesystem.path('extracts',format(data['name']))
+        
+        if os.path.exists(file_name):
+            if os.path.isdir(file_name):
+                self.filesystem.rm_rf(file_name)
+            else:
+                os.remove(file_name)
+        
+        dest_ds = ogr.GetDriverByName( ogr_format ).CopyDataSource(source_ds,file_name, options=options)
+
+        if os.path.isdir(file_name):
+            from databundles.util import zip_dir
+            fpath = file_name+'.zip'
+            zip_dir(file_name, fpath)
+            return fpath
+        else:
+            return file_name
+            
     
-    def get_sub_aas(self):
+    def _get_sub_aas(self):
         import yaml
         import databundles.geo as dg
         import databundles.library as dl
@@ -187,7 +247,7 @@ class Bundle(BuildBundle):
 
         k = dg.GaussianKernel(33,11)
         
-        sub_aas = self.get_sub_aas()[0:5]
+        sub_aas = [self.get_sub_aas()[1]]
         
         top_a = aa.new_array()
         for i, sub_aa in enumerate(sub_aas):
@@ -195,22 +255,119 @@ class Bundle(BuildBundle):
             sub_a = sub_aa.new_array()
             trans = sub_aa.get_translator()
 
-            q = "select date, time, cellx, celly, lat, lon, type from incidents WHERE {}".format(where)
+            q = "select * from incidents WHERE {}".format(where)
         
             for row in source_partition.query(q):
-                p = dg.Point(row['cellx']+random.randint(-rs, rs),
-                             row['celly']+random.randint(-rs, rs))
-                k.apply_add(top_a, p)
-            
                 p = trans(row['lon'],row['lat'])
                 k.apply_add(sub_a, p)
+                print row
             
             sub_aa.write_geotiff(ed(str(i)), dg.std_norm(ma.masked_equal(sub_a,0)))
-            
-            
-        aa.write_geotiff(ed('substest'), dg.std_norm(ma.masked_equal(top_a,0)))            
+            sub_aa.write_geotiff(ed(str(i)), sub_a)
+
       
         return True
+  
+
+  
+    def get_extract_name(self,data):
+        import ogr 
+        
+        name = data['name']
+        
+        options = []
+        if data['format'] == 'kml':
+            drv = ogr.GetDriverByName( "KML" )
+            fpath = path = self.filesystem.path('extracts',name)
+            
+        elif data['format'] == 'geojson':
+            drv = ogr.GetDriverByName( "GeoJSON" )
+            fpath = path = self.filesystem.path('extracts',name)
+        elif data['format'] == 'sqlite':
+            drv = ogr.GetDriverByName( "SQLite" )
+            fpath = path = self.filesystem.path('extracts',name)
+            options = ['SPATIALITE=YES', 'INIT_WITH_EPSG=YES','OGR_SQLITE_SYNCHRONOUS=OFF']
+        elif data['format'] == 'shapefile':
+            drv = ogr.GetDriverByName( "ESRI Shapefile" )
+            path = self.filesystem.path('extracts',name,name)
+            
+            if not os.path.exists(os.path.dirname(path)):
+                os.makedirs(os.path.dirname(path))
+                
+            fpath = self.filesystem.path('extracts',name+'.zip')
+            
+        else: 
+            self.error("Unknown extract format: {} ".format(data['format']))
+            
+        return path, fpath, drv, options        
+  
+    def extract_incident_shapefile(self, data):
+        import ogr 
+        import databundles.library as dl
+        import databundles.geo as dg
+        import random
+        import dateutil.parser
+        
+        path, fpath, drv, options = self.get_extract_name(data)
+        
+        if os.path.exists(fpath):
+            return fpath
+        
+            
+        l = dl.get_library()
+        aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
+        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
+        source_partition = l.get(r.partition).partition
+            
+        ds = drv.CreateDataSource(path, options=options)
+        srs = ogr.osr.SpatialReference()
+        srs.ImportFromEPSG(4326) # Lat/Long in WGS84
+        lyr = ds.CreateLayer( "incidents", srs, ogr.wkbPoint )
+
+        lyr.CreateField(ogr.FieldDefn( "type", ogr.OFTString )) # 0 
+        lyr.CreateField(ogr.FieldDefn( "hour", ogr.OFTInteger )) # 1
+        lyr.CreateField(ogr.FieldDefn( "day_time", ogr.OFTInteger )) # 2
+        
+        fn = ogr.FieldDefn( "date", ogr.OFTString ) # 3
+        fn.SetWidth(10)
+        lyr.CreateField(fn)
+        fn = ogr.FieldDefn( "desc", ogr.OFTString ) # 4 
+        fn.SetWidth(400)
+        lyr.CreateField(fn)     
+        fn = ogr.FieldDefn( "addr", ogr.OFTString ) # 5
+        fn.SetWidth(100)
+        lyr.CreateField(fn)           
+        
+
+        rnd = .00001 * 100 # Approx 100m
+        for row in source_partition.query("select date, time, lat, lon, type , description, address from incidents"):
+
+            pt = ogr.Geometry(ogr.wkbPoint)
+            pt.SetPoint_2D(0, row['lon']+random.uniform(-rnd, rnd), 
+                              row['lat']+random.uniform(-rnd, rnd))
+
+            feat = ogr.Feature(lyr.GetLayerDefn())
+            
+            try:  hour = dateutil.parser.parse(row['time']).time().hour
+            except: hour = None
+            
+          
+            feat.SetField(0, str(row['type']) )
+            feat.SetField(1, hour )    
+            feat.SetField(2, None )                 
+            feat.SetField(3, str(row['date']) )     
+            feat.SetField(4, str(row['description']) )  
+            feat.SetField(5, str(row['address']) ) 
+            feat.SetGeometry(pt)
+            lyr.CreateFeature(feat)
+            feat.Destroy()
+        
+        if data['format'] == 'shapefile':
+            from databundles.util import zip_dir
+            zip_dir(os.path.dirname(path), fpath)
+            return fpath
+        else:
+            return path
   
     def extract_sum_image(self, data, file_=None):  
         """List extract_image, but will sum multiple atasets together
@@ -241,10 +398,11 @@ class Bundle(BuildBundle):
             i+=i2[...]
             
         aa.write_geotiff(file_name, 
-                         std_norm(ma.masked_equal(i,0)),  
+                         i[...], # std_norm(ma.masked_equal(i,0)),  
                          type_=GDT_Float32)
 
         hdf.close()
+        
         
         return file_name
     
@@ -266,12 +424,13 @@ class Bundle(BuildBundle):
         self.log("Extracting difference, {} - {} ".format(data['type1'], data['type2']))
 
         # After subtraction, 0 is a valid value, so we need to change it. 
+        # [...] converts to a numpy array. 
         a1 = ma.masked_equal(i1[...],0)
         a2 = ma.masked_equal(i2[...],0)
                 
         diff = a1 - a2
         
-        o =  std_norm(diff)
+        o =  diff # std_norm(diff)
     
         o.set_fill_value(-1)
 
@@ -285,8 +444,26 @@ class Bundle(BuildBundle):
         
         return file_name
 
+
+    def extract_colormaps(self, data):
+        import databundles.geo as dg
+        import numpy as np
+
+        partition = self.partitions.all[0]# There is only one
+        hdf = partition.hdf5file
+        hdf.open()
         
+        a,_ = hdf.get_geo('Property')
+     
+        a1 = np.sort(a[...].ravel())
+     
+        cmap =  dg.get_colormap(data['map_name'],9, reverse=bool(data['reversed']))
         
+        path = self.filesystem.path('extras',data['name']+'.txt')
+        
+        dg.write_colormap(path, a1, cmap, min_val=1, break_scheme ='geometric')
+   
+        return path
     
     def demo(self):
         '''A commented demonstration of how to create crime data extracts as GeoTIFF 
@@ -306,7 +483,7 @@ class Bundle(BuildBundle):
         # Get the San Diego analysis area from the GEOID ( Defined by the US Census)
         # you can look up geoids in clarinova.com-extents-2012-7ba4/meta/san-diego-places.csv,
         # or query the places table in clarinova.com-extents-2012-7ba4.db
-        aa = get_analysis_area(self.library, geoid = '0666000')    
+        aa = get_analysis_area(self.library, geoid = 'CG0666000')    
       
         # Get a function to translate coodinates from the default lat/lon, WGS84, 
         # into the cordinate system of the AnalysisArea, which in this case
