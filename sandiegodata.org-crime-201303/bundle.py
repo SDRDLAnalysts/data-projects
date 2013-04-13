@@ -177,9 +177,9 @@ class Bundle(BuildBundle):
         format_map = {
             'kml': ('KML',[]),
             'geojson': ('GeoJSON',[]),
-            'sqlite': ('SQLite',[]),
-            'shapefile': ('ESRI Shapefile',('SPATIALITE=YES', 
-                                            'INIT_WITH_EPSG=YES','OGR_SQLITE_SYNCHRONOUS=OFF'))
+            'sqlite': ('SQLite',('SPATIALITE=YES', 
+                                 'INIT_WITH_EPSG=YES','OGR_SQLITE_SYNCHRONOUS=OFF')),
+            'shapefile': ('ESRI Shapefile',[])
         }
         
         source_ds = ogr.GetDriverByName('ESRI Shapefile').Open(shape_file)
@@ -325,16 +325,23 @@ class Bundle(BuildBundle):
         lyr = ds.CreateLayer( "incidents", srs, ogr.wkbPoint )
 
         lyr.CreateField(ogr.FieldDefn( "type", ogr.OFTString )) # 0 
-        lyr.CreateField(ogr.FieldDefn( "hour", ogr.OFTInteger )) # 1
-        lyr.CreateField(ogr.FieldDefn( "day_time", ogr.OFTInteger )) # 2
         
-        fn = ogr.FieldDefn( "date", ogr.OFTString ) # 3
+        fn=ogr.FieldDefn( "time", ogr.OFTString ) # 1
+        fn.SetWidth(8)
+        lyr.CreateField(fn)
+        
+        lyr.CreateField(ogr.FieldDefn( "hour", ogr.OFTInteger )) # 2
+        lyr.CreateField(ogr.FieldDefn( "day_time", ogr.OFTInteger )) # 3
+        
+        fn = ogr.FieldDefn( "date", ogr.OFTString ) # 4
         fn.SetWidth(10)
         lyr.CreateField(fn)
-        fn = ogr.FieldDefn( "desc", ogr.OFTString ) # 4 
+        
+        fn = ogr.FieldDefn( "desc", ogr.OFTString ) # 5 
         fn.SetWidth(400)
-        lyr.CreateField(fn)     
-        fn = ogr.FieldDefn( "addr", ogr.OFTString ) # 5
+        lyr.CreateField(fn)  
+           
+        fn = ogr.FieldDefn( "addr", ogr.OFTString ) # 6
         fn.SetWidth(100)
         lyr.CreateField(fn)           
         
@@ -353,11 +360,12 @@ class Bundle(BuildBundle):
             
           
             feat.SetField(0, str(row['type']) )
-            feat.SetField(1, hour )    
-            feat.SetField(2, None )                 
-            feat.SetField(3, str(row['date']) )     
-            feat.SetField(4, str(row['description']) )  
-            feat.SetField(5, str(row['address']) ) 
+            feat.SetField(1, str(row['time']) )  
+            feat.SetField(2, hour )    
+            feat.SetField(3, None )                 
+            feat.SetField(4, str(row['date']) )     
+            feat.SetField(5, str(row['description']) )  
+            feat.SetField(6, str(row['address']) ) 
             feat.SetGeometry(pt)
             lyr.CreateFeature(feat)
             feat.Destroy()
