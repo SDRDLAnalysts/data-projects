@@ -41,7 +41,7 @@ class Bundle(BuildBundle):
         import databundles.library as dl
         import databundles.geo as dg
         
-        l = dl.get_library()
+        l = self.library
         aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
         r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
         return  aa, l.get(r.partition).partition
@@ -65,8 +65,8 @@ class Bundle(BuildBundle):
         for row in source_partition.query("select date, time, cellx, celly, type  from incidents"):
             p = dg.Point(row['cellx']+random.randint(-rs, rs), # Randomness b/c addresses are quantized to street corners. 
                          row['celly']+random.randint(-rs, rs))
-            p = dg.Point(row['cellx'], row['celly'])
-            
+            #p = dg.Point(row['cellx'], row['celly'])
+  
             a = self.get_array_by_type(aa, row['type'])
             k.apply_add(a, p)
             
@@ -83,9 +83,7 @@ class Bundle(BuildBundle):
             for a in arrays:
                 out += a
             
-        #
         # Save the datasets to the HDF5 file, in a partition
-        #
         
         # Determine the length of the time period
         row = source_partition.query("""select julianday(min(date(date))), julianday(max(date(date)))
@@ -127,12 +125,11 @@ class Bundle(BuildBundle):
              
         self.log("Extracting {} to {} ".format(data['name'], file_name))
              
-             
         i,aa = hdf.get_geo(data['type'])
              
         aa.write_geotiff(file_name, 
                          i[...], #std_norm(ma.masked_equal(i,0)),  
-                         type_=GDT_Float32)
+                         data_type=GDT_Float32)
 
         hdf.close()
         
@@ -154,11 +151,12 @@ class Bundle(BuildBundle):
         hdf = partition.hdf5file
         hdf.open()
         
-        a1,_ = hdf.get_geo('Property')
-        a2,aa = hdf.get_geo('Violent')
-        
+        a1,_ = hdf.get_geo('property')
+        a2,aa = hdf.get_geo('violent')
+     
         a = dg.std_norm(ma.masked_equal(a1[...] + a2[...],0))   # ... Converts to a Numpy array. 
-                
+
+
         # Creates the shapefile in the extracts/contour directory
         envelopes = dg.bound_clusters_in_raster( a, aa, shape_file_dir, 0.1,0.7, use_bb=True, use_distance=50)
   
@@ -313,10 +311,14 @@ class Bundle(BuildBundle):
         if os.path.exists(fpath):
             return fpath
         
+        year = data['year']
             
-        l = dl.get_library()
+        source_bundle, _ = self.library.dep('aacrime')
+            
+        l = self.library
         aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
-        r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
+        r =  l.find(dl.QueryCommand().identity(id=source_bundle.identity.id_).partition(table='incidents',space=aa.geoid)).pop()
+        
         source_partition = l.get(r.partition).partition
             
         ds = drv.CreateDataSource(path, options=options)
@@ -347,17 +349,23 @@ class Bundle(BuildBundle):
         
 
         rnd = .00001 * 100 # Approx 100m
-        for row in source_partition.query("select date, time, lat, lon, type , description, address from incidents"):
+        for row in source_partition.query("""
+        select date, time, lat, lon, type , description, address from incidents 
+        where  CAST(strftime('%Y', date) AS INTEGER) = {year} """.format(year=year)):
 
             pt = ogr.Geometry(ogr.wkbPoint)
-            pt.SetPoint_2D(0, row['lon']+random.uniform(-rnd, rnd), 
-                              row['lat']+random.uniform(-rnd, rnd))
+            
+            px = row['lon']+random.uniform(-rnd, rnd)
+            py = row['lat']+random.uniform(-rnd, rnd)
+
+            
+            pt.SetPoint_2D(0, px, py )
 
             feat = ogr.Feature(lyr.GetLayerDefn())
             
             try:  hour = dateutil.parser.parse(row['time']).time().hour
             except: hour = None
-            
+   
           
             feat.SetField(0, str(row['type']) )
             feat.SetField(1, str(row['time']) )  
@@ -444,7 +452,7 @@ class Bundle(BuildBundle):
 
         self.log("Stats: \n{}".format(statistics(o)))
 
-        aa.write_geotiff(file_name, ma.filled(o),  type_=GDT_Float32, nodata = -1)
+        aa.write_geotiff(file_name, ma.filled(o),  data_type=GDT_Float32, nodata = -1)
 
         self.log("Wrote Difference TIFF {}".format(file_name))
         

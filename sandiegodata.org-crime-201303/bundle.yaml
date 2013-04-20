@@ -21,21 +21,30 @@ about:
 build:
     aa_geoid: CG0666000
     crime_merges:
-        Other:
-        - Arrest
-        - Other
-        Property:
-        - Theft
-        - Burglary
-        - Robbery
-        - Vandalism
-        - Arson
-        Violent:
-        - Assault
-        - Shooting
+        auto:
+        - auto_breakin_theft
+        - auto_theft
+        other:
+        - drugs
+        - sex_crime
+        - fraud
+        - dui
+        property:
+        - theft
+        - burglary
+        - robbery
+        - vandalism
+        - arson
+        violent:
+        - assault
+        - homocide
+        - weapons
     dependencies:
-        crime: clarinova.com-us_crime_incidents-state-7ba4-ca.incidents
+        crime: sandag.org-crimeincidents-cleaned-429e
+        aacrime: clarinova.com-sandag_crime_incidents-aa-orig-429e
+        extents: clarinova.com-extents-2012-7ba4
         lamps: sangis.org-street_lights-orig-7ba4-street_lights
+        old-crime: clarinova.com-us_crime_incidents-state-7ba4-ca.incidents
 extracts:
     colormaps:
         description: QGIS colormap.
@@ -67,12 +76,12 @@ extracts:
             and {type2} datasets
         done_if: os.path.exists('{path}')
         each:
-        -   -   type1: Property
-                type2: Violent
-            -   type1: Violent
-                type2: Property
-            -   type1: Burglary
-                type2: Theft
+        -   -   type1: property
+                type2: violent
+            -   type1: violent
+                type2: property
+            -   type1: burglary
+                type2: theft
         function: extract_diff_image
         name: sandiego-diff-{type1}-{type2}.tiff
         title: Crime Difference Map, {type1} - {type2}
@@ -84,17 +93,17 @@ extracts:
             2009.
         done_if: os.path.exists('{path}')
         each:
-        -   -   type: Assault
-            -   type: Shooting
-            -   type: Theft
-            -   type: Burglary
-            -   type: Robbery
-            -   type: Vandalism
-            -   type: Arson
-            -   type: Arrest
-            -   type: Other
-            -   type: Property
-            -   type: Violent
+        -   -   type: assault
+            -   type: homocide
+            -   type: theft
+            -   type: burglary
+            -   type: robbery
+            -   type: vandalism
+            -   type: arson
+            -   type: auto
+            -   type: dui
+            -   type: property
+            -   type: violent
         function: extract_image
         name: sandiego-crime-{type}.tiff
         title: Crime Map, {type}
@@ -106,8 +115,15 @@ extracts:
             -   format: geojson
             -   format: sqlite
             -   format: shapefile
+        -   -   year: 2007
+            -   year: 2008
+            -   year: 2009
+            -   year: 2010
+            -   year: 2011
+            -   year: 2012
+            -   year: 2013
         function: extract_incident_shapefile
-        name: incidents.{format}
+        name: incidents-{year}.{format}
 identity:
     creator: eric@sandiegodata.org
     dataset: crime
