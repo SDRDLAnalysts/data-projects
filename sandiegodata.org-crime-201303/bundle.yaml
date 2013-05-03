@@ -41,10 +41,8 @@ build:
         - weapons
     dependencies:
         crime: sandag.org-crimeincidents-cleaned-429e
-        aacrime: clarinova.com-sandag_crime_incidents-aa-orig-429e
         extents: clarinova.com-extents-2012-7ba4
         lamps: sangis.org-street_lights-orig-7ba4-street_lights
-        old-crime: clarinova.com-us_crime_incidents-state-7ba4-ca.incidents
 extracts:
     colormaps:
         description: QGIS colormap.

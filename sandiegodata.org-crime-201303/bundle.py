@@ -63,9 +63,8 @@ class Bundle(BuildBundle):
         # Create each of the arrays, one per type. 
         #
         for row in source_partition.query("select date, time, cellx, celly, type  from incidents"):
-            p = dg.Point(row['cellx']+random.randint(-rs, rs), # Randomness b/c addresses are quantized to street corners. 
-                         row['celly']+random.randint(-rs, rs))
-            #p = dg.Point(row['cellx'], row['celly'])
+
+            p = dg.Point(row['cellx'], row['celly'])
   
             a = self.get_array_by_type(aa, row['type'])
             k.apply_add(a, p)
@@ -469,7 +468,7 @@ class Bundle(BuildBundle):
         hdf = partition.hdf5file
         hdf.open()
         
-        a,_ = hdf.get_geo('Property')
+        a,_ = hdf.get_geo('property')
      
         a1 = np.sort(a[...].ravel())
      
