@@ -93,6 +93,7 @@ extracts:
         each:
         -   -   type: assault
             -   type: homocide
+            -   type: violent
             -   type: theft
             -   type: burglary
             -   type: robbery
@@ -101,7 +102,11 @@ extracts:
             -   type: auto
             -   type: dui
             -   type: property
-            -   type: violent
+            -   type: drugs
+            -   type: other
+            -   type: auto_theft
+            -   type: auto_breakin_theft
+
         function: extract_image
         name: sandiego-crime-{type}.tiff
         title: Crime Map, {type}
