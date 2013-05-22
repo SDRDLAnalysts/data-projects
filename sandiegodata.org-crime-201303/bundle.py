@@ -46,7 +46,7 @@ class Bundle(BuildBundle):
         r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
         return  aa, l.get(r.partition).partition
 
-    def build(self):
+    def old_build(self):
         ''' '''
         
         import databundles.geo as dg
@@ -154,7 +154,6 @@ class Bundle(BuildBundle):
         a2,aa = hdf.get_geo('violent')
      
         a = dg.std_norm(ma.masked_equal(a1[...] + a2[...],0))   # ... Converts to a Numpy array. 
-
 
         # Creates the shapefile in the extracts/contour directory
         envelopes = dg.bound_clusters_in_raster( a, aa, shape_file_dir, 0.1,0.7, use_bb=True, use_distance=50)
@@ -461,7 +460,7 @@ class Bundle(BuildBundle):
 
 
     def extract_colormaps(self, data):
-        import databundles.geo as dg
+        from  databundles.geo.colormap import get_colormap, write_colormap
         import numpy as np
 
         partition = self.partitions.all[0]# There is only one
@@ -472,11 +471,11 @@ class Bundle(BuildBundle):
      
         a1 = np.sort(a[...].ravel())
      
-        cmap =  dg.get_colormap(data['map_name'],9, reverse=bool(data['reversed']))
+        cmap =  get_colormap(data['map_name'],9, reverse=bool(data['reversed']))
         
         path = self.filesystem.path('extras',data['name']+'.txt')
         
-        dg.write_colormap(path, a1, cmap, min_val=1, break_scheme ='geometric')
+        write_colormap(path, a1, cmap, min_val=1, break_scheme ='geometric')
    
         return path
     
