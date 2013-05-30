@@ -1,0 +1,2 @@
+"table","column","is_pk","is_fk","i1","i2","i3","i4","i5","type","default","size","description"
+"incidentsr","id",1,,,,,,,"INTEGER",,,

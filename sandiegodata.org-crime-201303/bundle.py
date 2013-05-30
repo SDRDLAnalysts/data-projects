@@ -14,17 +14,6 @@ class Bundle(BuildBundle):
         self.super_.__init__(directory)
         self.array_cache = {}
 
-    def prepare(self):
-        from databundles.identity import PartitionIdentity
-        
-        if not self.database.exists():
-            self.database.create()
-
-        pid =  PartitionIdentity(self.identity, grain='arrays')
-        partition = self.partitions.new_partition(pid)
-
-        return True
-      
     
     def get_array_by_type(self, aa, name):
         '''Cache lookups of analysis areaa arrays'''
@@ -45,6 +34,54 @@ class Bundle(BuildBundle):
         aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
         r =  l.find(dl.QueryCommand().identity(id='a2z2HM').partition(table='incidents',space=aa.geoid)).pop()
         return  aa, l.get(r.partition).partition
+
+    def build(self):
+        import databundles.geo as dg
+        from databundles.geo.analysisarea import get_analysis_area, draw_edges
+        from osgeo.gdalconst import GDT_Float32
+        import databundles.datasets.geo as ddg
+
+        _,places = self.library.dep('places')
+        _, incidents = self.library.dep('crime')
+        raster = self.partitions.new_hdf_partition(table='incidentsr') 
+
+        k = dg.GaussianKernel(27,9)
+
+        lr = self.init_log_rate(25000)
+        
+        for place_row in places.query("SELECT * FROM places"): 
+            
+            if not place_row['aa']:
+                continue
+            
+            if place_row['code'] != 'SndSAN':
+                continue
+            
+            q = """SELECT * FROM incidents WHERE {} = ? """.format(place_row['type'])
+            
+            place = ddg.US(self.library).place(place_row['code'])
+            aa = place.aa(scale=10)
+            trans = aa.get_translator()
+            a = aa.new_array()
+            
+            if a.size < 700:
+                self.error("{} is too small ({},{})".format(place.name, a.shape[0], a.shape[1]))
+                continue
+            
+            self.log("Loading place: {} ".format(place.name))
+            
+            for i, row in enumerate(incidents.query(q, place.code)):
+           
+                lr("Add raster point")
+                try:
+                    k.apply_add(a, trans(row['lon'], row['lat']))
+                except Exception as e:
+                    self.error("Failed for point: "+e)
+    
+            masked = place.mask(a,nodata=0, scale=10).filled(0)
+            raster.database.put_geo(place.code, masked, aa)    
+
+        return True
 
     def old_build(self):
         ''' '''
@@ -108,6 +145,47 @@ class Bundle(BuildBundle):
 
         return True
 
+    def  extract_sl_image(self, data):
+        """ """
+        
+        from databundles.geo.array import statistics, std_norm
+        from osgeo.gdalconst import GDT_Float32
+        import numpy as np
+        import numpy.ma as ma
+
+        crimep = self.partitions.find(table='incidentsr')  
+        crimea,aa = crimep.database.get_geo(data['type'])
+                      
+        _,lightsp = self.library.dep('streetlightsr')
+        lightsa,aa = lightsp.database.get_geo(data['type'])
+        
+        file_name = self.filesystem.path('extracts','{}'.format(data['name']))
+             
+        self.log("Extracting {} to {} ".format(data['name'], file_name))
+
+
+        crimea = crimea[...]
+        crimea = np.clip(crimea, 0, crimea.mean()+4*crimea.std())
+        crimea /= crimea.max() # Normalize to 1
+        crimea = ma.masked_equal(crimea,0)
+
+        print crimea.min(), crimea.mean(), crimea.max()
+
+        lightsa = lightsa[...]
+        lightsa = np.clip(lightsa, 0 , lightsa.mean()+ 2*lightsa.std())
+        print lightsa.min(), lightsa.mean(), lightsa.max()
+        
+        lightsa /= lightsa.max()
+        lightsa = ma.masked_equal(1-lightsa,0)
+
+        print lightsa.min(), lightsa.mean(), lightsa.max()
+
+        x = lightsa.filled(0) * crimea.filled(0)
+
+        aa.write_geotiff(file_name, x, data_type=GDT_Float32)
+
+        return file_name
+
   
     def extract_image(self, data):
         """Save an HDF5 Dataset directly as a geotiff"""
@@ -116,22 +194,53 @@ class Bundle(BuildBundle):
         from osgeo.gdalconst import GDT_Float32
         from numpy import ma
 
-        partition = self.partitions.all[0]# There is only one
-        hdf = partition.hdf5file
-        hdf.open()
-   
+        raster = self.partitions.find(grain='raster')        
+
         file_name = self.filesystem.path('extracts','{}'.format(data['name']))
              
         self.log("Extracting {} to {} ".format(data['name'], file_name))
              
-        i,aa = hdf.get_geo(data['type'])
+        i,aa = raster.database.get_geo(data['type'])
              
         aa.write_geotiff(file_name, 
                          i[...], #std_norm(ma.masked_equal(i,0)),  
                          data_type=GDT_Float32)
 
-        hdf.close()
+     
+        return file_name
         
+    def extract_images(self):
+        """Save an HDF5 Dataset directly as a geotiff"""
+        
+        from databundles.geo.array import statistics, std_norm
+        from osgeo.gdalconst import GDT_Float32
+        from numpy import ma
+
+        raster = self.partitions.find(grain='raster')        
+
+        _,places = self.library.dep('places')
+
+        lr = self.init_log_rate(25000)
+        
+        for place in places.query("SELECT * FROM places"): 
+
+            if not place['aa']:
+                continue
+
+            file_name = self.filesystem.path('extracts','{}.tiff'.format(place['code']))
+             
+            self.log("Extracting {} to {} ".format(place['code'], file_name))
+             
+            try:
+                i,aa = raster.database.get_geo(place['code'])
+                 
+                aa.write_geotiff(file_name, 
+                                 i[...], #std_norm(ma.masked_equal(i,0)),  
+                                 data_type=GDT_Float32)
+            except Exception as e:
+                self.error("Failed for {}: {}".format(place['code'], e))
+
+     
         return file_name
          
     def make_contour_bounds_shapefile(self):
@@ -460,25 +569,25 @@ class Bundle(BuildBundle):
 
 
     def extract_colormaps(self, data):
-        from  databundles.geo.colormap import get_colormap, write_colormap
+        from  databundles.geo.colormap import get_colormap, write_colormap, expand_map
         import numpy as np
 
-        partition = self.partitions.all[0]# There is only one
-        hdf = partition.hdf5file
-        hdf.open()
-        
-        a,_ = hdf.get_geo('property')
+        raster = self.partitions.find(grain='raster')        
+    
+        a,_ = raster.database.get_geo('SndSAN')
      
         a1 = np.sort(a[...].ravel())
      
         cmap =  get_colormap(data['map_name'],9, reverse=bool(data['reversed']))
         
-        path = self.filesystem.path('extras',data['name']+'.txt')
+        cmap = expand_map(cmap,1)
         
-        write_colormap(path, a1, cmap, min_val=1, break_scheme ='geometric')
+        path = self.filesystem.path('extras',data['name'])
+
+        write_colormap(path, a1, cmap,  min_val = 0, max_val = a1.std()*10, break_scheme = data['break'])
    
         return path
-    
+
     def demo(self):
         '''A commented demonstration of how to create crime data extracts as GeoTIFF 
         images 

@@ -40,22 +40,56 @@ build:
         - homocide
         - weapons
     dependencies:
-        crime: sandag.org-crimeincidents-cleaned-429e
-        places: clarinova.com-places-casd-7ba4-places
         alcohol: clarinova.com-alcohol_licenses-casnd-429e-licenses
-        lights: clarinova.com-street_lights-casnd-429e-raster
+        crime: clarinova.com-crime-incidents-casnd-7ba4-incidents
+        streetlightsr: clarinova.com-street_lights-casnd-429e-streetlightsr
+        places: clarinova.com-places-casd-7ba4-places
 extracts:
     colormaps:
         description: QGIS colormap.
         each:
-        -   map_name: YlOrRd
+        -   break: logistic
+            map_name: YlOrRd
             reversed: false
             size: 9
-        -   map_name: Spectral
+        -   break: logistic
+            map_name: Spectral
+            reversed: true
+            size: 9
+        -   break: exponential
+            map_name: Spectral
+            reversed: true
+            size: 9
+        -   break: logistic
+            map_name: Purples
+            reversed: true
+            size: 9
+        -   break: exponential
+            map_name: Purples
+            reversed: true
+            size: 9
+        -   break: logistic
+            map_name: RdYlGn
+            reversed: true
+            size: 9
+        -   break: logistic
+            map_name: BrBG
+            reversed: true
+            size: 9
+        -   break: exponential
+            map_name: PRGn
+            reversed: true
+            size: 9
+        -   break: logistic
+            map_name: PRGn
+            reversed: true
+            size: 9
+        -   break: logistic
+            map_name: YlGnBu
             reversed: true
             size: 9
         function: extract_colormaps
-        name: colors-{map_name}-{size}.txt
+        name: colors-{map_name}-{size}-{break}.txt
     contours:
         description: Contours
         each:
@@ -88,8 +122,7 @@ extracts:
         description: A grayscale GeoTIFF  heatmap of {type} crime in the San Diego
             area. It is intended for loading into a GIS program, and won't be useful
             in a general image viewer. The cell values are crimes per day per square
-            kilometer, averaged over the analysis period, which is 2007, 2008 and
-            2009.
+            kilometer, averaged over the analysis period.
         done_if: os.path.exists('{path}')
         each:
         -   -   type: assault
@@ -107,7 +140,6 @@ extracts:
             -   type: other
             -   type: auto_theft
             -   type: auto_breakin_theft
-
         function: extract_image
         name: sandiego-crime-{type}.tiff
         title: Crime Map, {type}
@@ -128,6 +160,23 @@ extracts:
             -   year: 2013
         function: extract_incident_shapefile
         name: incidents-{year}.{format}
+    single_image:
+        description: A grayscale GeoTIFF  heatmap of {type} crime in the San Diego
+            area. It is intended for loading into a GIS program, and won't be useful
+            in a general image viewer. The cell values are crimes per day per square
+            kilometer, averaged over the analysis period.
+        done_if: os.path.exists('{path}')
+        function: extract_image
+        name: sandiego-crime-all.tiff
+        title: Crime Map, {type}
+        type: SndSAN
+    lights:
+        description: Lights Vs Crime
+        done_if: os.path.exists('{path}')
+        function: extract_sl_image
+        name: sandiego-crime-lights.tiff
+        title: Crime Map, {type}
+        type: SndSAN
 identity:
     creator: eric@sandiegodata.org
     dataset: crime
@@ -137,4 +186,4 @@ identity:
     source: sandiegodata.org
     variation: '201303'
 partitions:
-- sandiegodata.org-crime-201303-429e-arrays
+- sandiegodata.org-crime-201303-429e-incidentsr
