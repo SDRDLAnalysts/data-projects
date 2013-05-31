@@ -41,8 +41,8 @@ class Bundle(BuildBundle):
         from osgeo.gdalconst import GDT_Float32
         import databundles.datasets.geo as ddg
 
-        _,places = self.library.dep('places')
-        _, incidents = self.library.dep('crime')
+        places = self.library.dep('places').partition
+        incidents = self.library.dep('crime').partition
         raster = self.partitions.new_hdf_partition(table='incidentsr') 
 
         k = dg.GaussianKernel(27,9)
@@ -156,7 +156,7 @@ class Bundle(BuildBundle):
         crimep = self.partitions.find(table='incidentsr')  
         crimea,aa = crimep.database.get_geo(data['type'])
                       
-        _,lightsp = self.library.dep('streetlightsr')
+        lightsp = self.library.dep('streetlightsr').partition
         lightsa,aa = lightsp.database.get_geo(data['type'])
         
         file_name = self.filesystem.path('extracts','{}'.format(data['name']))
@@ -218,7 +218,7 @@ class Bundle(BuildBundle):
 
         raster = self.partitions.find(grain='raster')        
 
-        _,places = self.library.dep('places')
+        places = self.library.dep('places').partition
 
         lr = self.init_log_rate(25000)
         
@@ -420,7 +420,7 @@ class Bundle(BuildBundle):
         
         year = data['year']
             
-        source_bundle, _ = self.library.dep('aacrime')
+        source_bundle  = self.library.dep('aacrime')
             
         l = self.library
         aa = dg.get_analysis_area(l, geoid=self.config.build.aa_geoid)
