@@ -104,20 +104,7 @@ extracts:
         name: incidents.csv
         partition: clarinova.com-spotcrime_incidents-aa-orig-7ba4-incidents.CG0666000
         query: select * from incidents
-    diffs:
-        description: A grayscale GeoTIFF heatmap of the difference between the {type1}
-            and {type2} datasets
-        done_if: os.path.exists('{path}')
-        each:
-        -   -   type1: property
-                type2: violent
-            -   type1: violent
-                type2: property
-            -   type1: burglary
-                type2: theft
-        function: extract_diff_image
-        name: sandiego-diff-{type1}-{type2}.tiff
-        title: Crime Difference Map, {type1} - {type2}
+
     images:
         description: A grayscale GeoTIFF  heatmap of {type} crime in the San Diego
             area. It is intended for loading into a GIS program, and won't be useful

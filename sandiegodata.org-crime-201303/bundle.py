@@ -194,7 +194,7 @@ class Bundle(BuildBundle):
         from osgeo.gdalconst import GDT_Float32
         from numpy import ma
 
-        raster = self.partitions.find(grain='raster')        
+        raster = self.partitions.find(table='incidentsr')        
 
         file_name = self.filesystem.path('extracts','{}'.format(data['name']))
              
@@ -523,9 +523,7 @@ class Bundle(BuildBundle):
         aa.write_geotiff(file_name, 
                          i[...], # std_norm(ma.masked_equal(i,0)),  
                          type_=GDT_Float32)
-
         hdf.close()
-        
         
         return file_name
     
@@ -536,7 +534,7 @@ class Bundle(BuildBundle):
         import numpy as np
 
         partition = self.partitions.all[0]# There is only one
-        hdf = partition.hdf5file
+        hdf = partition.database
         hdf.open()
 
         i1, aa = hdf.get_geo(data['type1'])
