@@ -566,6 +566,8 @@ class Bundle(BuildBundle):
         return file_name
 
 
+    
+
     def extract_colormaps(self, data):
         from  databundles.geo.colormap import get_colormap, write_colormap, expand_map
         import numpy as np

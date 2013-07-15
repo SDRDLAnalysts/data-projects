@@ -40,10 +40,10 @@ build:
         - homocide
         - weapons
     dependencies:
-        alcohol: clarinova.com-alcohol_licenses-casnd-429e-licenses
-        crime: clarinova.com-crime-incidents-casnd-7ba4-incidents
-        streetlightsr: clarinova.com-street_lights-casnd-429e-streetlightsr
-        places: clarinova.com-places-casd-7ba4-places
+        alcohol: clarinova.com-alcohol_licenses-casnd-429e.licenses
+        crime: clarinova.com-crime-incidents-casnd-7ba4.incidents
+        streetlightsr: clarinova.com-street_lights-casnd-429e.streetlightsr
+        places: clarinova.com-places-casd-7ba4.places
 extracts:
     colormaps:
         description: QGIS colormap.
