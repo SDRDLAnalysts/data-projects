@@ -34,3 +34,5 @@ nosetests.xml
 .pydevproject
 
 *.sqlite
+
+_packages
