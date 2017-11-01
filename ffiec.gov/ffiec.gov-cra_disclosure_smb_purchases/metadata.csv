@@ -1,0 +1,139 @@
+"Declare","metatab-latest",,,,,,
+"Title","Community Reinvestment Act Disclosure Files",,,,,,
+"Description","Multi-year CRA disclosures for purchases of small business loans",,,,,,
+"Identifier","49dfbb5d-43ce-4d50-8dd5-cc6f12275cba",,,,,,
+"Name","ffiec.gov-cra_disclosure_smb_purchases-2010_2015-1",,,,,,
+"Dataset","cra_disclosure_smb_purchases",,,,,,
+"Origin","ffiec.gov",,,,,,
+"Time","2010-2015",,,,,,
+"Space",,,,,,,
+"Grain",,,,,,,
+"Version",1,,,,,,
+"Created","2017-09-14T04:42:59",,,,,,
+"Modified","2017-09-15T02:30:31",,,,,,
+"Giturl","https://github.com/sandiegodata/data-projects.git",,,,,,
+,,,,,,,
+"Section","References","Name",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/15exp_discl.zip","discl_15",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/14exp_discl.zip","discl_14",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/13exp_discl.zip","discl_13",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/12exp_discl.zip","discl_12",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/11exp_discl.zip","discl_11",,,,,
+"Reference","https://www.ffiec.gov/cra/xls/10exp_discl.zip","discl_10",,,,,
+,,,,,,,
+"Section","Resources","Name","Schema","Prefix","HeaderLines","Schema","Prefix"
+"Datafile","python:lib#extract","sb_loan_purch","cra_disclosure","D1-2",,"d1_1","D1-1"
+,,,,,,,
+"Section","Documentation","Title","Description",,,,
+"Note",,,,,,,
+,,,,,,,
+"Section","Contacts","Email","Organization","Url",,,
+"Wrangler","Eric Busboom","eric@sandiegodata.org","San Diego Regional Data Library","http://sandiegodata.org",,,
+,,,,,,,
+"Section","Schema","DataType","Width","Description",,,
+"Table","cra_disclosure",,,,,,
+"Table.Column","table_id","text",5,"Value is D1-1",,,
+"Table.Column","respondent_id","text",10,"Assigned by regulatory agency 
+(same as HMDAID if applicable);  
+Right justified with leading zeros",,,
+"Table.Column","agency","integer",1,"Values are 1=OCC, 2=FRS, 
+3=FDIC, or 4=OTS",,,
+"Table.Column","year","integer",4,"Four digit year (e.g. 2012)",,,
+"Table.Column","loan_type","integer",1,"Value is 4 (Small Business)",,,
+"Table.Column","action","integer",1,"Value is 1 (Originations)",,,
+"Table.Column","state","integer",2,"FIPS code with leading zeros 
+or blank for totals across all 
+states",,,
+"Table.Column","county","integer",3,"FIPS code with leading zeros or blank 
+for totals across all counties",,,
+"Table.Column","msa","integer",5,"As defined by OMB; Right justified 
+with leading zeros, NA left justified 
+for areas outside of MSA/MD or blank 
+for totals across all MSA/MDs",,,
+"Table.Column","assessment_area","text",4,"Values are 0001 through 9999; Right 
+justified with leading zeros, NA left justified 
+for areas outside of an Assessment 
+Area (including predominately military 
+areas) OR blank for totals across 
+all Assessment Areas",,,
+"Table.Column","partial_county","text",1,"Values are 
+Y = Yes 
+N = No 
+OR blank for totals",,,
+"Table.Column","split_county","text",1,"Values are 
+Y = Yes 
+N = No 
+OR blank for totals",,,
+"Table.Column","pop_class","text",1,"Values are 
+S= counties with 
+< 500,000 in population 
+L= counties with 
+>500,000 in population 
+OR blank for totals",,,
+"Table.Column","income_total","text",3,"Values are 
+1= < 10% of Median Family 
+Income(MFI) 
+2= 10% to 20% of MFI 
+3= 20% to 30% of MFI 
+4= 30% to 40% of MFI 
+5= 40% to 50% of MFI 
+6= 50% to 60% of MFI 
+7= 60% to 70% of MFI 
+8= 70% to 80% of MFI 
+9= 80% to 90% of MFI 
+ 10= 90% to 100% of MFI 
+ 11= 100% to 110% of MFI 
+ 12= 110% to 120% of MFI 
+ 13= > 120% of MFI 
+ 14= MFI not known (income 
+percentage = 0) 
+ 15= Tract not Known (reported 
+as NA) 
+101= Low Income (< 50% of 
+MFI - excluding 0) 
+102= Moderate Income (50% 
+to 80% of MFI) 
+103= Middle Income (80% to 
+120% of MFI) 
+104= Upper Income (> 120% 
+of MFI) 
+105= Income Not Known (0) 
+106= Tract not Known (NA) 
+Right justified with leading zeros 
+or blank for totals",,,
+"Table.Column","report_level","text",3,"Values are 
+4= Total Inside & Outside 
+Assessment Area (AA) 
+(across all states) 
+6= Total Inside AA 
+(across all states) 
+8= Total Outside AA 
+(across all states) 
+  10= State Total 
+  20= Total Inside AA in State 
+  30= Total Outside AA in State 
+  40= County Total 
+  50= Total Inside AA in County 
+  60= Total Outside AA in County 
+Right justified with leading zeros 
+or blank if not a total",,,
+"Table.Column","num_lt100k","integer",10,"Right justified with leading zeros",,,
+"Table.Column","tot_purch_farm_lt100k","integer",10,"Amount is in thousands {e.g. 00000025 
+indicates $25,000); Right justified with 
+leading zeros",,,
+"Table.Column","num_lt250k","integer",10,"Right justified with leading zeros",,,
+"Table.Column","tot_gt100k_lt250k","integer",10,"Amount is in thousands {e.g. 00000125 
+indicates $125,000); Right justified with 
+leading zeros",,,
+"Table.Column","num_gt250k","integer",10,"Right justified with leading zeros",,,
+"Table.Column","tot_purch_farm_gt250k","integer",10,"Amount is in thousands {e.g. 00000300 
+indicates $300,000); Right justified with 
+leading zeros",,,
+"Table.Column","num_lt1m","integer",10,"Right justified with leading zeros",,,
+"Table.Column","tot_lt1m","integer",10,"Amount is in thousands {e.g. 00000025 
+indicates $25,000); Right justified with 
+leading zeros",,,
+"Table.Column","num_al","integer",10,"Right justified with leading zeros",,,
+"Table.Column","tot_al","integer",10,"Amount is in thousands {e.g. 00000025 
+indicates $25,000); Right justified with 
+leading zeros",,,
