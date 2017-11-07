@@ -1,0 +1,52 @@
+Declare,metatab-latest
+Title,San Diego Police Regions
+Description,"Boundary shapes for San Diego neighborhoods, beats and divisions."
+Identifier,9f92e8a5-d775-40e6-9875-cfa2cb13e08d
+Name,sandiego.gov-police_regions-1
+Dataset,police_regions
+Origin,sandiego.gov
+Time,
+Space,
+Grain,
+Version,1
+Created,2017-11-07T16:20:12
+Modified,2017-11-07T17:32:00
+Issued,2017-11-07T17:28:58
+Distribution,http://library.metatab.org/sandiego.gov-police_regions-1/metadata.csv
+Distribution,http://library.metatab.org/sandiego.gov-police_regions-1.zip
+Distribution,http://library.metatab.org/sandiego.gov-police_regions-1.csv
+Ckanid,34adab32-cc6f-4121-818e-8027c4e40a9d
+Giturl,https://github.com/sandiegodata/data-projects.git
+
+Section,Contacts,Email,Organization,Url
+Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
+
+Section,Documentation,Title,Description,
+Homepage,https://data.sandiego.gov/datasets/pd-divisions/,Police Divisions Repository Page,Data repository page that links to original files.,
+
+Section,Resources,Name,Description,
+Datafile,shape+http://seshat.datasd.org/sde/pd/pd_beats_datasd.zip,pd_beats,Police beats,
+Datafile,shape+http://seshat.datasd.org/sde/pd/pd_divisions_datasd.zip,pd_divisions,Police Divisions,
+Datafile,shape+http://seshat.datasd.org/sde/pd/pd_divisions_datasd.zip,pd_neighborhoods,Police Neighborhoods,
+
+Section,Schema,DataType,AltName,Description
+Table,pd_beats,,,
+Table.Column,id,integer,,
+Table.Column,objectid,integer,,
+Table.Column,beat,integer,,
+Table.Column,div,integer,,
+Table.Column,serv,integer,,
+Table.Column,name,text,,
+Table.Column,geometry,geometry,,
+Table,pd_divisions,,,
+Table.Column,id,integer,,
+Table.Column,objectid,integer,,
+Table.Column,div_num,integer,,
+Table.Column,div_name,text,,
+Table.Column,geometry,geometry,,
+Table,pd_neighborhoods,,,
+Table.Column,id,integer,,
+Table.Column,objectid,integer,,
+Table.Column,div_num,integer,,
+Table.Column,div_name,text,,
+Table.Column,geometry,geometry,,

@@ -3,11 +3,10 @@
 "Description","Multi-year CRA disclosures for purchases of small business loans",,,,,,
 "Identifier","49dfbb5d-43ce-4d50-8dd5-cc6f12275cba",,,,,,
 "Name","ffiec.gov-cra_disclosure_smb_purchases-2010_2015-1",,,,,,
-"Dataset","cra_disclosure_smb_purchases",,,,,,
+"Dataset","cra_disclosure_smb",,,,,,
 "Origin","ffiec.gov",,,,,,
 "Time","2010-2015",,,,,,
-"Space",,,,,,,
-"Grain",,,,,,,
+"Grain","purchases",,,,,,
 "Version",1,,,,,,
 "Created","2017-09-14T04:42:59",,,,,,
 "Modified","2017-09-15T02:30:31",,,,,,
@@ -22,7 +21,7 @@
 "Reference","https://www.ffiec.gov/cra/xls/10exp_discl.zip","discl_10",,,,,
 ,,,,,,,
 "Section","Resources","Name","Schema","Prefix","HeaderLines","Schema","Prefix"
-"Datafile","python:lib#extract","sb_loan_purch","cra_disclosure","D1-2",,"d1_1","D1-1"
+"Datafile","python:publicdata.ffiec#extract","sb_loan_purch","cra_disclosure","D1-2",,"d1_1","D1-1"
 ,,,,,,,
 "Section","Documentation","Title","Description",,,,
 "Note",,,,,,,

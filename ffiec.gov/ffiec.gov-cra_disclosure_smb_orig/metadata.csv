@@ -1,83 +1,82 @@
-Declare,metatab-latest
-Title,Community Reinvestment Act Disclosure Files
-Description,Multi-year CRA disclosures for small business originations.
-Identifier,738707dc-8cf5-44e9-b469-d4016abf9648
-Name,ffiec.gov-cra_disclosure_smb_orig-2010_2015-2
-Dataset,cra_disclosure_smb_orig
-Origin,ffiec.gov
-Time,2010-2015
-Space,
-Grain,
-Version,2
-Group,projects
-Tag,mdf-lending
-Created,2017-09-14T04:42:59
-Modified,2017-09-18T15:27:19
-Issued,2017-09-18T05:08:50
-Distribution,http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2/metadata.csv
-Distribution,http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2.zip
-Distribution,http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2.csv
-Ckanid,409faa36-f4a4-4991-98df-ccf4129f6257
-Giturl,https://github.com/sandiegodata/data-projects.git
-
-Section,References,Name,,,
-Reference,https://www.ffiec.gov/cra/xls/15exp_discl.zip,discl_15,,,
-Reference,https://www.ffiec.gov/cra/xls/14exp_discl.zip,discl_14,,,
-Reference,https://www.ffiec.gov/cra/xls/13exp_discl.zip,discl_13,,,
-Reference,https://www.ffiec.gov/cra/xls/12exp_discl.zip,discl_12,,,
-Reference,https://www.ffiec.gov/cra/xls/11exp_discl.zip,discl_11,,,
-Reference,https://www.ffiec.gov/cra/xls/10exp_discl.zip,discl_10,,,
-
-Section,Resources,Name,Schema,Prefix,Description
-Datafile,python:lib#extract,sb_loan_orig,cra_disclosure,D1-1,"Table D1-1, small business disclosire records, for years 2010 to 2015 inclusive"
-
-Section,Documentation,Title,Description,,
-Includedocumentation,documentation.md,Main documentation,,,
-
-Section,Contacts,Email,Organization,Url,
-Wrangler,Eric Busboom,eric@sandiegodata.org,San Diego Regional Data Library,http://sandiegodata.org,
-
-Section,Schema,DataType,Width,Description,
-Table,cra_disclosure,,,,
-Table.Column,table_id,text,5,Value is D1-1,
-Table.Column,respondent_id,text,10,"Assigned by regulatory agency 
+"Declare","metatab-latest",,,,
+"Title","Community Reinvestment Act Disclosure Files",,,,
+"Description","Multi-year CRA disclosures for small business originations.",,,,
+"Identifier","738707dc-8cf5-44e9-b469-d4016abf9648",,,,
+"Name","ffiec.gov-cra_disclosure_smb_orig-2010_2015-2",,,,
+"Dataset","cra_disclosure_smb",,,,
+"Origin","ffiec.gov",,,,
+"Time","2010-2015",,,,
+"Grain","orig",,,,
+"Version",2,,,,
+"Group","projects",,,,
+"Tag","mdf-lending",,,,
+"Created","2017-09-14T04:42:59",,,,
+"Modified","2017-09-18T15:27:19",,,,
+"Issued","2017-09-18T05:08:50",,,,
+"Distribution","http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2/metadata.csv",,,,
+"Distribution","http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2.zip",,,,
+"Distribution","http://library.metatab.org/ffiec.gov-cra_disclosure_smb_orig-2010_2015-2.csv",,,,
+"Ckanid","409faa36-f4a4-4991-98df-ccf4129f6257",,,,
+"Giturl","https://github.com/sandiegodata/data-projects.git",,,,
+,,,,,
+"Section","References","Name",,,
+"Reference","https://www.ffiec.gov/cra/xls/15exp_discl.zip","discl_15",,,
+"Reference","https://www.ffiec.gov/cra/xls/14exp_discl.zip","discl_14",,,
+"Reference","https://www.ffiec.gov/cra/xls/13exp_discl.zip","discl_13",,,
+"Reference","https://www.ffiec.gov/cra/xls/12exp_discl.zip","discl_12",,,
+"Reference","https://www.ffiec.gov/cra/xls/11exp_discl.zip","discl_11",,,
+"Reference","https://www.ffiec.gov/cra/xls/10exp_discl.zip","discl_10",,,
+,,,,,
+"Section","Resources","Name","Schema","Prefix","Description"
+"Datafile","python:publicdata.ffiec#extract","sb_loan_orig","cra_disclosure","D1-1","Table D1-1, small business disclosire records, for years 2010 to 2015 inclusive"
+,,,,,
+"Section","Documentation","Title","Description",,
+"Includedocumentation","documentation.md","Main documentation",,,
+,,,,,
+"Section","Contacts","Email","Organization","Url",
+"Wrangler","Eric Busboom","eric@sandiegodata.org","San Diego Regional Data Library","http://sandiegodata.org",
+,,,,,
+"Section","Schema","DataType","Width","Description",
+"Table","cra_disclosure",,,,
+"Table.Column","table_id","text",5,"Value is D1-1",
+"Table.Column","respondent_id","text",10,"Assigned by regulatory agency 
 (same as HMDAID if applicable);  
 Right justified with leading zeros",
-Table.Column,agency,integer,1,"Values are 1=OCC, 2=FRS, 
+"Table.Column","agency","integer",1,"Values are 1=OCC, 2=FRS, 
 3=FDIC, or 4=OTS",
-Table.Column,year,integer,4,Four digit year (e.g. 2012),
-Table.Column,loan_type,integer,1,Value is 4 (Small Business),
-Table.Column,action,integer,1,Value is 1 (Originations),
-Table.Column,state,integer,2,"FIPS code with leading zeros 
+"Table.Column","year","integer",4,"Four digit year (e.g. 2012)",
+"Table.Column","loan_type","integer",1,"Value is 4 (Small Business)",
+"Table.Column","action","integer",1,"Value is 1 (Originations)",
+"Table.Column","state","integer",2,"FIPS code with leading zeros 
 or blank for totals across all 
 states",
-Table.Column,county,integer,3,"FIPS code with leading zeros or blank 
+"Table.Column","county","integer",3,"FIPS code with leading zeros or blank 
 for totals across all counties",
-Table.Column,msa,integer,5,"As defined by OMB; Right justified 
+"Table.Column","msa","integer",5,"As defined by OMB; Right justified 
 with leading zeros, NA left justified 
 for areas outside of MSA/MD or blank 
 for totals across all MSA/MDs",
-Table.Column,assessment_area,text,4,"Values are 0001 through 9999; Right 
+"Table.Column","assessment_area","text",4,"Values are 0001 through 9999; Right 
 justified with leading zeros, NA left justified 
 for areas outside of an Assessment 
 Area (including predominately military 
 areas) OR blank for totals across 
 all Assessment Areas",
-Table.Column,partial_county,text,1,"Values are 
+"Table.Column","partial_county","text",1,"Values are 
 Y = Yes 
 N = No 
 OR blank for totals",
-Table.Column,split_county,text,1,"Values are 
+"Table.Column","split_county","text",1,"Values are 
 Y = Yes 
 N = No 
 OR blank for totals",
-Table.Column,pop_class,text,1,"Values are 
+"Table.Column","pop_class","text",1,"Values are 
 S= counties with 
 < 500,000 in population 
 L= counties with 
 >500,000 in population 
 OR blank for totals",
-Table.Column,income_total,text,3,"Values are 
+"Table.Column","income_total","text",3,"Values are 
 1= < 10% of Median Family 
 Income(MFI) 
 2= 10% to 20% of MFI 
@@ -108,7 +107,7 @@ of MFI)
 106= Tract not Known (NA) 
 Right justified with leading zeros 
 or blank for totals",
-Table.Column,report_level,text,3,"Values are 
+"Table.Column","report_level","text",3,"Values are 
 4= Total Inside & Outside 
 Assessment Area (AA) 
 (across all states) 
@@ -124,23 +123,23 @@ Assessment Area (AA)
   60= Total Outside AA in County 
 Right justified with leading zeros 
 or blank if not a total",
-Table.Column,num_orig_bus_lt100k,integer,10,Right justified with leading zeros,
-Table.Column,tot_orig_bus_lt100k,integer,10,"Amount is in thousands {e.g. 00000025 
+"Table.Column","num_orig_bus_lt100k","integer",10,"Right justified with leading zeros",
+"Table.Column","tot_orig_bus_lt100k","integer",10,"Amount is in thousands {e.g. 00000025 
 indicates $25,000); Right justified with 
 leading zeros",
-Table.Column,num_orig_bus_lt250k,integer,10,Right justified with leading zeros,
-Table.Column,tot_orig_bus_gt100k_lt250k,integer,10,"Amount is in thousands {e.g. 00000125 
+"Table.Column","num_orig_bus_lt250k","integer",10,"Right justified with leading zeros",
+"Table.Column","tot_orig_bus_gt100k_lt250k","integer",10,"Amount is in thousands {e.g. 00000125 
 indicates $125,000); Right justified with 
 leading zeros",
-Table.Column,num_orig_bus_gt250k_lt1m,integer,10,Right justified with leading zeros,
-Table.Column,tot_orig_bus_gt250k_lt1m,integer,10,"Amount is in thousands {e.g. 00000300 
+"Table.Column","num_orig_bus_gt250k_lt1m","integer",10,"Right justified with leading zeros",
+"Table.Column","tot_orig_bus_gt250k_lt1m","integer",10,"Amount is in thousands {e.g. 00000300 
 indicates $300,000); Right justified with 
 leading zeros",
-Table.Column,num_orig_bus_lt1m,integer,10,Right justified with leading zeros,
-Table.Column,tot_orig_bus_lt1m,integer,10,"Amount is in thousands {e.g. 00000025 
+"Table.Column","num_orig_bus_lt1m","integer",10,"Right justified with leading zeros",
+"Table.Column","tot_orig_bus_lt1m","integer",10,"Amount is in thousands {e.g. 00000025 
 indicates $25,000); Right justified with 
 leading zeros",
-Table.Column,num_orig_bus_al,integer,10,Right justified with leading zeros,
-Table.Column,tot_orig_bus_al,integer,10,"Amount is in thousands {e.g. 00000025 
+"Table.Column","num_orig_bus_al","integer",10,"Right justified with leading zeros",
+"Table.Column","tot_orig_bus_al","integer",10,"Amount is in thousands {e.g. 00000025 
 indicates $25,000); Right justified with 
 leading zeros",
