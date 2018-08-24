@@ -36,3 +36,8 @@ nosetests.xml
 *.sqlite
 
 _packages
+
+.DS_Store
+.~lock.metadata.csv#
+.ipynb_checkpoints
+

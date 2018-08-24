@@ -1,0 +1,23 @@
+// This Stat/Transfer command file was automatically generated on August 24, 2018 at 9:53 AM (v14.1.1015.0713, Mac OS X (Darwin 17.7.0 x86_64))
+//ENCODING UTF-8
+set numeric-names      n
+set log-level          e
+set in-encoding        system
+set out-encoding       system
+set enc-errors         sub
+set enc-sub-char       _
+set enc-error-limit    100
+set var-case-cs        preserve-mixed
+set preserve-label-sets y
+set preserve-str-widths n
+set preserve-num-widths n
+set map-miss-with-labs n
+set user-miss          all
+set map-user-miss      n
+set write-old-ver      14
+set stata-strL-threshold 32
+set write-stata-se     y
+
+copy  /Users/eric/proj/virt-proj/data-project/sdrdl-data-projects/cornell-social-survey/cornell.edu-cnss-2017/data/cnss2017.sav stata /Users/eric/proj/virt-proj/data-project/sdrdl-data-projects/cornell-social-survey/cornell.edu-cnss-2017/data/cnss2017.dta 
+
+quit
