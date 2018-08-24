@@ -1,6 +1,7 @@
 Declare,metatab-latest,,,
 Title,"Cornell National Social Survey (CNSS), 2017",,,
-Description,"Cornell National Social Survey is a random-sample survey of adults aged 18 and over. In 2017, participants were asked their opinions on a range of topics.",,,
+Description,Cornell National Social Survey is a random-sample survey of adults aged 18 and,,,
+Description,"over. In 2017, participants were asked their opinions on a range of topics.",,,
 Identifier,4e018c38-042e-49c5-8553-361a72e4ca76,,,
 Name,cornell.edu-cnss-2017-1,,,
 Dataset,cnss,,,
@@ -11,7 +12,7 @@ Grain,,,,
 Variant,,,,
 Version,1,,,
 Created,2018-08-24T14:48:25,,,
-Modified,2018-08-24T14:48:28,,,
+Modified,2018-08-24T19:19:08,,,
 Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,
 ,,,,
 Section,Contacts,Email,Organization,Url
@@ -19,19 +20,130 @@ Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowle
 ,,,,
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-DownloadPage,https://cisermgmt.cornell.edu/go/PHPs/catalogSingleStudy.php?IDTITLE=2805,Download Page,,
-HomePage,https://www.sri.cornell.edu/sri/cnss.cfm,Home Page,,
+Downloadpage,https://cisermgmt.cornell.edu/go/PHPs/catalogSingleStudy.php?IDTITLE=2805,Download Page,,
+Homepage,https://www.sri.cornell.edu/sri/cnss.cfm,Home Page,,
 Documentation,https://cisermgmt.cornell.edu/go/PHPs/rsch_downloadPUB.php?COMPDL=pub/034/cnss2017_Codebook.pdf.zip&IDTITLE=2805&PERMLEVEL=0,Codebook,,
 Documentation,https://cisermgmt.cornell.edu/go/PHPs/rsch_downloadPUB.php?COMPDL=pub/034/Results_and_Citation_Guidelines.pdf.zip&IDTITLE=2805&PERMLEVEL=0,Results and Citation Guidelines,,
-DownloadLink,https://cisermgmt.cornell.edu/go/PHPs/rsch_downloadPUB.php?COMPDL=pub/034/cnss2017.sav.zip&IDTITLE=2805&PERMLEVEL=0,cnss_2017,Cornell National Social Survey 2017 download link,
+Downloadlink,https://cisermgmt.cornell.edu/go/PHPs/rsch_downloadPUB.php?COMPDL=pub/034/cnss2017.sav.zip&IDTITLE=2805&PERMLEVEL=0,cnss_2017_dl,Cornell National Social Survey 2017 download link,
 ,,,,
 Section,References,Name,Description,
-Reference,data/cnss2017.dta,cnss_2017,"Cornell National Social Survey 2017, in converted Stata forma",
-,,,,
+Reference,data/cnss2017.dta,cnss_2017_dta,"Cornell National Social Survey 2017, in converted Stata forma",
 ,,,,
 Section,Resources,Name,Description,
-,,,,
-,,,,
-,,,,
+Datafile,notebooks/Convert.ipynb#df,cnss_2017,"CNSS 2017, with categorical values",
 ,,,,
 Section,Schema,DataType,AltName,Description
+Table,cnss_2017,,,
+Table.Column,caseid,integer,,caseid
+Table.Column,survid,integer,,survid
+Table.Column,timezone,string,,timezone
+Table.Column,state,string,,state
+Table.Column,msa,string,,msa
+Table.Column,msc,integer,,msc
+Table.Column,censusr,integer,,censusr
+Table.Column,censusd,integer,,censusd
+Table.Column,cbsamsa,integer,,cbsamsa
+Table.Column,cbsamcsa,integer,,cbsamcsa
+Table.Column,AHq1,string,ahq1,AHq1
+Table.Column,AHq2,string,ahq2,AHq2
+Table.Column,AHq3,string,ahq3,AHq3
+Table.Column,KENq1,string,kenq1,KENq1
+Table.Column,KENq2,string,kenq2,KENq2
+Table.Column,KENq3,string,kenq3,KENq3
+Table.Column,JS_version,string,js_version,JS_version
+Table.Column,JSq1,string,jsq1,JSq1
+Table.Column,LCq1,string,lcq1,LCq1
+Table.Column,SKq1,string,skq1,SKq1
+Table.Column,SKq2_a,string,skq2_a,SKq2_a
+Table.Column,SKq2_b,string,skq2_b,SKq2_b
+Table.Column,SKq3,string,skq3,SKq3
+Table.Column,JBq1,string,jbq1,JBq1
+Table.Column,JBq2,string,jbq2,JBq2
+Table.Column,JBq3,string,jbq3,JBq3
+Table.Column,RVq1,string,rvq1,RVq1
+Table.Column,RVq2,string,rvq2,RVq2
+Table.Column,RVq3,string,rvq3,RVq3
+Table.Column,RVq4,string,rvq4,RVq4
+Table.Column,RVq5,string,rvq5,RVq5
+Table.Column,RVq6,string,rvq6,RVq6
+Table.Column,JAq1,string,jaq1,JAq1
+Table.Column,rq_seq_i,string,,rq_seq_i
+Table.Column,JAq2_rq,string,jaq2_rq,JAq2_rq
+Table.Column,JAq3_rq,string,jaq3_rq,JAq3_rq
+Table.Column,PDq1,string,pdq1,PDq1
+Table.Column,PDq2,string,pdq2,PDq2
+Table.Column,PDq3,string,pdq3,PDq3
+Table.Column,KRq2,string,krq2,KRq2
+Table.Column,MMq1,string,mmq1,MMq1
+Table.Column,MMq2,string,mmq2,MMq2
+Table.Column,MMq3,string,mmq3,MMq3
+Table.Column,MMq4,string,mmq4,MMq4
+Table.Column,RIq1,string,riq1,RIq1
+Table.Column,RIq2,string,riq2,RIq2
+Table.Column,RIq3,string,riq3,RIq3
+Table.Column,RIq4,string,riq4,RIq4
+Table.Column,SZq1,string,szq1,SZq1
+Table.Column,SZq2,string,szq2,SZq2
+Table.Column,SZq3,string,szq3,SZq3
+Table.Column,SZq4,string,szq4,SZq4
+Table.Column,SZq5,string,szq5,SZq5
+Table.Column,EBq1,string,ebq1,EBq1
+Table.Column,EBq2,string,ebq2,EBq2
+Table.Column,EBq3,string,ebq3,EBq3
+Table.Column,DRUGq1,string,drugq1,DRUGq1
+Table.Column,MFq1,string,mfq1,MFq1
+Table.Column,MFq2,string,mfq2,MFq2
+Table.Column,SSq1,string,ssq1,SSq1
+Table.Column,KWq1_a,string,kwq1_a,KWq1_a
+Table.Column,KWq1_b,string,kwq1_b,KWq1_b
+Table.Column,KWq2,string,kwq2,KWq2
+Table.Column,SKq4,string,skq4,SKq4
+Table.Column,SKq5,string,skq5,SKq5
+Table.Column,SKq6,string,skq6,SKq6
+Table.Column,EYCq1,string,eycq1,EYCq1
+Table.Column,EYCq2,string,eycq2,EYCq2
+Table.Column,EYCq3,string,eycq3,EYCq3
+Table.Column,EYCq4,string,eycq4,EYCq4
+Table.Column,LVq1_a,string,lvq1_a,LVq1_a
+Table.Column,LVq1_b,string,lvq1_b,LVq1_b
+Table.Column,MJq1,string,mjq1,MJq1
+Table.Column,IDq1,string,idq1,IDq1
+Table.Column,IDq2,string,idq2,IDq2
+Table.Column,IDq3,string,idq3,IDq3
+Table.Column,IDq4,string,idq4,IDq4
+Table.Column,IDq5,string,idq5,IDq5
+Table.Column,employ,string,,employ
+Table.Column,jbtype,string,,jbtype
+Table.Column,selfempl,string,,selfempl
+Table.Column,lkwork,string,,lkwork
+Table.Column,LVq2_a,string,lvq2_a,LVq2_a
+Table.Column,LVq2_b,string,lvq2_b,LVq2_b
+Table.Column,HHSIZE_A,integer,hhsize_a,HHSIZE_A
+Table.Column,HHSIZE_B,integer,hhsize_b,HHSIZE_B
+Table.Column,HHSIZE_C,integer,hhsize_c,HHSIZE_C
+Table.Column,hhadults,integer,,hhadults
+Table.Column,ph_totl,integer,,ph_totl
+Table.Column,ph_cell,string,,ph_cell
+Table.Column,yob,integer,,yob
+Table.Column,age,integer,,age
+Table.Column,borninus,string,,borninus
+Table.Column,married,string,,married
+Table.Column,ideo,string,,ideo
+Table.Column,party,string,,party
+Table.Column,educ,string,,educ
+Table.Column,ownrent,string,,ownrent
+Table.Column,hisp,string,,hisp
+Table.Column,RACE_A,string,race_a,RACE_A
+Table.Column,RACE_B,string,race_b,RACE_B
+Table.Column,RACE_C,string,race_c,RACE_C
+Table.Column,RACE_D,string,race_d,RACE_D
+Table.Column,RACE_E,string,race_e,RACE_E
+Table.Column,numraces,integer,,numraces
+Table.Column,relig,string,,relig
+Table.Column,church,string,,church
+Table.Column,hhince,string,,hhince
+Table.Column,hhinc50k,string,,hhinc50k
+Table.Column,hhincu,string,,hhincu
+Table.Column,hhinco,string,,hhinco
+Table.Column,hhinc,string,,hhinc
+Table.Column,gender,string,,gender
