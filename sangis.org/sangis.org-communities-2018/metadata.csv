@@ -1,0 +1,72 @@
+Declare,metatab-latest,,,
+Title,Community and City Boundaries in San Diego County,,,
+Description,Combines three geographic boundary files for communities and cities in San Diego County.,,,
+Identifier,ff738c99-8676-4807-8d01-eed39291df38,,,
+Name,sangis.org-communities-2018-1,,,
+Dataset,communities,,,
+Origin,sangis.org,,,
+Time,2018,,,
+Space,,,,
+Grain,,,,
+Variant,,,,
+Version,1,,,
+Created,2018-08-28T02:26:59,,,
+Modified,2018-08-28T03:17:13,,,
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,
+,,,,
+Section,Contacts,Email,Organization,Url
+Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
+,,,,
+Section,Documentation,Title,Description,
+Documentation,file:README.md,README,,
+Documentation,doc/Community_Plan_SD.pdf,San Diego City Community Shapefile Documentation,,
+Documentation,doc/Community_Plan_CN.pdf,San Diego County Community Shapefile Documentation,,
+Documentation,doc/Municipal_Boundaries.pdf,City Boundary Shapefile Documentation,,
+,,,,
+Section,Resources,Name,Description,
+Datafile,shape+file:data/Municipal_Boundaries.zip,cities,Converted source of boundaries for cities in San  Diego county,
+Datafile,shape+file:data/Community_Plan_CN.ZIP,county_communities,Converted source of boundaries for communities in unincorporated  San  Diego county,
+Datafile,shape+file:data/Community_Plan_SD.zip,sd_communities,Converted source of boundaries for communities in the city of  San  Diego.,
+Datafile,python:pylib#generate_boundaries,communities,Combined cities and community files,
+,,,,
+Section,Schema,DataType,AltName,Description
+Table,cities,,,
+Table.Column,id,integer,,
+Table.Column,NAME,string,name,
+Table.Column,CODE,string,code,
+Table.Column,CREATEDBY,string,createdby,ID of SanGIS editor that created the original feature. Automatically set by system.
+Table.Column,CREATEDDAT,date,createddat,Date feature last updated (automatically set by system)
+Table.Column,UPDATEDBY,string,updatedby,ID of SanGIS editor that last updated the feature polygon or attributes (automatically set by system).
+Table.Column,UPDATEDDAT,date,updateddat,Date feature last updated (automatically set by system)
+Table.Column,DOCYR,integer,docyr,Document year as sown on official recorded document
+Table.Column,DOCNO,string,docno,Document number as shown on official recorded document
+Table.Column,DOCDATE,date,docdate,Date document was recorded by the County of San Diego recorders office and/or as shown on document provided to SanGIS by LAFCO
+Table.Column,SUBJECT,string,subject,"LAFCO Certificate of Completion subject as shown on recorded document (e.g. ""Hillside Meadows Reorganization"")"
+Table.Column,SHAPE_STAr,number,shape_star,Shape area in internal units
+Table.Column,SHAPE_STLe,number,shape_stle,Shape length in internal units
+Table.Column,geometry,string,,
+Table,county_communities,,,
+Table.Column,id,integer,,
+Table.Column,AREA_,number,area,
+Table.Column,PERIMETER,number,perimeter,
+Table.Column,CPASG_LABE,string,cpasg_labe,"This field is for labeling purposes. It contains the Sponsor Group name. If not in a sponsor group, the Community Plan Area name. All names in Title Case."
+Table.Column,CPANAME,string,cpaname,Community Plan Name
+Table.Column,SPONSORNAM,string,sponsornam,Name of the Sponsor Group (it is blank if it is not a Sponsor Group)
+Table.Column,CPASG,integer,code,Numeric code for each Community Plan Area and Sponsor Group
+Table.Column,SUBREGPLAN,string,subregplan,Subregional Plan Name (It is NULL if it is not in a subregional planning area)
+Table.Column,Shape_STAr,number,shape_star,Shape area in internal units
+Table.Column,Shape_STLe,number,shape_stle,Internal feature number.
+Table.Column,geometry,string,,
+Table,sd_communities,,,
+Table.Column,id,integer,,
+Table.Column,CPCODE,integer,cpcode,Arbitrary numbers used as reference to map in text documents.
+Table.Column,CPNAME,string,cpname,Adopted Community Planning Area Name
+Table.Column,ACREAGE,number,acreage,
+Table.Column,Shape_STAr,number,shape_star,
+Table.Column,Shape_STLe,number,shape_stle,
+Table.Column,geometry,string,,
+Table,communities,,,
+Table.Column,type,string,,"Type of area, city, sd_community. county_community"
+Table.Column,name,string,,"Name of area, not guaranteed to be unique"
+Table.Column,code,string,,"Code for the area, a different form for each area"
+Table.Column,geometry,string,,
