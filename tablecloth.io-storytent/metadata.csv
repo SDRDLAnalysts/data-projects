@@ -1,0 +1,78 @@
+Declare,metatab-latest,,,
+Title,StoryTent Utilization,,,
+Description,"Processed StoryTent utilization data, with checkins mapped to checkouts. It is",,,
+Description,assumed checkins and checkouts are on the same day. All checkins and outs are,,,
+Description,"collected for each date, and the first checkin for each date is linked to the",,,
+Description,last checkout.,,,
+Identifier,d59ce6a1-aa0a-4abb-a9b6-5072e14ad9e6,,,
+Name,tablecloth.io-storytent-5,,,
+Dataset,storytent,,,
+Origin,tablecloth.io,,,
+Version,5,,,
+Created,2018-07-09T18:24:46,,,
+Modified,2018-09-03T21:49:51,,,
+,,,,
+Section,Contacts,Email,Organization,Url
+Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
+,,,,
+Section,Documentation,Title,Description,
+Includedocumentation,file:README.md,README,,
+Note,Rows without Locations are given the location of “NA”,,,
+,,,,
+,,,,
+,,,,
+Section,References,Name,Description,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#0,aug18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#960517181,july18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#650411090,june18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#940361384,may18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#32250034,april18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#1656690279,march18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#888669776,feb18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#658833098,jan18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#1803153536,dec17,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#1508457028,nov17,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#573665976,oct17,,
+,,,,
+Section,Resources,Name,Description,
+Datafile,python:pylib#combine_sources,source,Original source data,
+Datafile,python:pylib#row_generator,checkins,"Processed data, with checkins linked to checkouts",
+,,,,
+Section,Schema,DataType,AltName,Description
+Table,checkins,,,
+Table.Column,type,string,,"'c’ for check-in + check-out, ‘i’ for only check in, ‘o’ for only checkout"
+Table.Column,location,string,,Name of StoryTent site
+Table.Column,time_in,datetime,,Check-in time
+Table.Column,time_out,datetime,,Check-out time
+Table.Column,duration,integer,,Duration of visit in minutes
+Table.Column,feeling_in,string,,Check-in feeling
+Table.Column,feeling_out,string,,Check-out feeling
+Table.Column,first_name,string,,User first name
+Table.Column,last_name,text,,User last name
+Table.Column,full_name,text,,User full name
+Table.Column,name_key,text,,Text key built form name and birthdate
+Table.Column,user_id,string,,"User id, the md5 of name_key"
+Table.Column,session_id,string,,"Session id, unique uuid per row"
+Table.Column,checkin_row_no,integer,,Row number of the source row used for the checkin
+Table.Column,checkout_row_no,integer,,Row number of the source row used for the checkout
+Table,source,,,
+Table.Column,SourceFile,string,source_file,Resource name for the source file
+Table.Column,Location,string,location,
+Table.Column,First Name,text,first_name,
+Table.Column,Last Name,text,last_name,
+Table.Column,Gender,string,gender,
+Table.Column,Grade,string,grade,
+Table.Column,Birthday,string,birthdate,
+Table.Column,Feeling about  reading before?,string,checkin_feeling,
+Table.Column,Feeling about reading after?,string,checkout_feeling,
+Table.Column,Check In,datetime,checkin_timestamp,
+Table.Column,Check Out,datetime,checkout_timestamp,
+Table.Column,Visit Duration,string,visit_duration,
+Table.Column,Quick Checkin,string,quick_checkin_url,
+Table.Column,Quick Checkout,string,quick_checkout_url,
+Table.Column,Birthdate Converted,string,birthdate_converted,
+Table.Column,Checkin QR,string,checkin_qr_url,
+Table.Column,Checkout QR,string,checkout_qr_url,
+Table.Column,NOTES,string,notes,
+Table.Column,QR Checkin (Google),string,qr_checkin_url,
+Table.Column,QR Checkout (Google),string,qr_checkout_url,
