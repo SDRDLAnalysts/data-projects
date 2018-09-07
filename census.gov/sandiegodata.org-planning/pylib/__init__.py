@@ -28,36 +28,28 @@ def extract_sandiego(resource, doc, env, *args, **kwargs):
             yield [str(tract)] + list(row.values())
     
 def make_tract_community(df, comm ):
-    import geopandas
-    # link a community record to each tract
 
     _1 = df[['geoid','geometry']].copy()
     _1['rep_p'] = _1.representative_point()
-    df_rep = geopandas.GeoDataFrame(_1, geometry='rep_p')
+    df_rep = gpd.GeoDataFrame(_1, geometry='rep_p')
 
-    tract_community = geopandas.sjoin(comm, df_rep, op='contains')[['geoid','type','name','code']] # Probably will be slow
+    tract_community = gpd.sjoin(comm, df_rep, op='contains')[['geoid','type','name','code']] # Probably will be slow
     tract_community.columns = ['geoid','region_type','region_name','region_code']
 
-    # Check that the number of tracts in the City of San Diego equals the number
-    # of tracts in communities in San Diego
-    assert(tract_community.region_type.value_counts().loc['sd_community'] ==
-           len(tract_community[tract_community.region_code == 'SD']) )
+    priority_map = {
+        'sd_community' : 1,
+        'city': 2,
+        'county_community': 3
+    }
 
-    # Add a code for the city, if the tract is in a city
-    tract_community['city'] = tract_community.region_code.where(tract_community.region_type == 'city')
+    tract_community['priority'] = tract_community['region_type'].apply(lambda v: priority_map[v])
 
-    # All of the sd_communities are in San Diego
-    tract_community.loc[tract_community.region_type=='sd_community','city'] = 'SD'
+    tract_community.sort_values(['geoid','priority'], inplace=True)
+    tract_community = tract_community[~tract_community.duplicated('geoid',keep='first')].set_index('geoid')
 
-    # Now we don't need the San Diego city tracts. 
-    tract_community = tract_community[ ~(tract_community.region_code == 'SD')]
+    tract_community['region_type'] = tract_community.region_type.where(tract_community.region_code != 'CN', 'county')
 
-    # Get rid of the last of the dupes
-    tract_community = tract_community[ ~(tract_community.city == 'CN')].sort_values('region_type') # # So duplicated() removes the county community, not a city
-
-    tract_community = tract_community[ ~tract_community.duplicated('geoid',keep='first')]
-
-    return tract_community.set_index('geoid')
+    return tract_community.drop('priority', axis=1)
     
 def generate_geo(resource, doc, env, *args, **kwargs):
     from metapack.rowgenerator import PandasDataframeSource
