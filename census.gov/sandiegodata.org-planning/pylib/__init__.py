@@ -29,6 +29,8 @@ def extract_sandiego(resource, doc, env, *args, **kwargs):
     
 def make_tract_community(df, comm ):
 
+    import geopandas as gpd
+    
     _1 = df[['geoid','geometry']].copy()
     _1['rep_p'] = _1.representative_point()
     df_rep = gpd.GeoDataFrame(_1, geometry='rep_p')
@@ -47,6 +49,10 @@ def make_tract_community(df, comm ):
     tract_community.sort_values(['geoid','priority'], inplace=True)
     tract_community = tract_community[~tract_community.duplicated('geoid',keep='first')].set_index('geoid')
 
+    tract_community['city'] = tract_community.apply(lambda r : 'SAN DIEGO' if r.region_type == 'sd_community' 
+                                                                else r.region_name if r.region_type == 'city' 
+                                                                else '', axis=1)
+    
     tract_community['region_type'] = tract_community.region_type.where(tract_community.region_code != 'CN', 'county')
 
     return tract_community.drop('priority', axis=1)
