@@ -1,4 +1,5 @@
 
+
 def link_code(type, code):
     return "{}-{}".format(type, code).lower()
 
@@ -58,14 +59,22 @@ def tract_link(resource, doc, env, *args, **kwargs):
     tract_community = tract_community.rename({'name_left':'name'}, axis=1)[columns]
 
     yield from PandasDataframeSource('<df>',tract_community , get_cache())
-    
+  
+def clean_comm_name(s):
+    import re
+    return re.compile('[^a-zA-Z]').sub('',s.lower())  
+
+  
 def flat_tract_link(resource, doc, env, *args, **kwargs):
-    
     from metapack.rowgenerator import PandasDataframeSource
     from metapack import get_cache
-    
+
     tc = doc.resource('tracts_all_regions').dataframe()
     tracts = doc.resource('tracts').geoframe()
+    acronyms = doc.reference('acronyms')
+
+    acro_map = dict(list(acronyms)[1:])
+    acro_map[''] = ''
 
     _1 = tc[['geoid']].drop_duplicates().set_index('geoid').join(tracts[['geoid', 'geometry']].set_index('geoid'))
     _2 = tc.set_index('geoid')
@@ -86,28 +95,32 @@ def flat_tract_link(resource, doc, env, *args, **kwargs):
      'county_name',
      'county_code',
      'community_name',
-     'community_code',
+     'community_cpcode',
      'cnc_name',
      'cnc_code']
-
+  
     # Move the county name into the city columns, then drop it
     _7['city_name'] = _7.city_name.where(~((_7.city_name.isnull()) & (_7.county_code == 'CN')),'COUNTY' )
     _7['city_code'] = _7.city_code.where(~((_7.city_code.isnull()) & (_7.county_code == 'CN')),'CN' )
 
     _7.drop(['county_name','county_code'], axis=1, inplace=True)
+   
 
     # Move the  county community names into the community columns
-    _7['community_name'] = _7.community_name.where( _7.city_code != 'CN' ,  _7.cnc_name ).fillna('')
-    _7['community_code'] = _7.community_code.where( _7.city_code != 'CN' ,  _7.cnc_code ).fillna('')
+    _7['community_name'] =  _7.community_name.where( _7.city_code != 'CN' ,  _7.cnc_name ).fillna('')
+    _7['community_cpcode'] =_7.community_cpcode.where( _7.city_code != 'CN' ,  _7.cnc_code ).fillna('0')
 
     _7.drop(['cnc_name','cnc_code'], axis=1, inplace=True)
 
     _7 = _7.fillna('')
-
+    
     _7['city_name'] = _7.city_name.apply(lambda v : v.title())
     _7['community_name'] = _7.community_name.apply(lambda v : str(v).title()).fillna('')
 
-    # move geometry to the end
+    _7['community_code'] = _7.community_name.apply(lambda v: acro_map[clean_comm_name(v)].upper() )
+
+     # move geometry to the end
     _7 = _7[ list(_7.columns)[1:]+ list(_7.columns)[:1]]
+
     
     yield from PandasDataframeSource('<df>',_7 , get_cache())
