@@ -1,26 +1,26 @@
-code,name,alt_code
-3700,San Diego County,
-3701,Carlsbad,
-3702,Chula Vista,
-3703,Coronado,
-3704,Del Mar,3700
-3705,El Cajon,
-3706,Escondido,
-3707,Imperial Beach,3700
-3708,La Mesa,
-3709,National City,
-3710,Oceanside,
-3711,San Diego,
-3712,San Marcos,3700
-3713,Vista,3700
-3714,San Diego State Univ,
-3715,San Diego Harbor,
-3720,Lemon Grove,3700
-3722,Colorado Desert Park,
-3724,Ocotillo Wls Pk Dist,
-3725,San Diego Pk Dist,
-3780,Poway,3700
-3781,Santee,3700
-3782,Encinitas,3700
-3783,Solana Beach,3700
-3797,Uc San Diego,
+code,name,alt_code,population,area
+3701,Carlsbad,,112008,97713477
+3702,Chula Vista,,260598,128544440
+3722,Colorado Desert Park,,,
+3703,Coronado,,24852,20541298
+3704,Del Mar,3700,4312,4420546
+3705,El Cajon,,102894,37516310
+3782,Encinitas,3700,62160,48722319
+3706,Escondido,,149912,96015101
+3707,Imperial Beach,3700,27180,10777758
+3708,La Mesa,,59125,23552227
+3720,Lemon Grove,3700,26421,10045431
+3709,National City,,60349,18853103
+3710,Oceanside,,173829,106841893
+3724,Ocotillo Wls Pk Dist,,,
+3780,Poway,3700,49675,101214289
+3711,San Diego,,1374812,842252395
+3700,San Diego County,,3253356,
+3715,San Diego Harbor,,,
+3725,San Diego Pk Dist,,,
+3714,San Diego State Univ,,,
+3712,San Marcos,3700,91479,63105425
+3781,Santee,3700,56839,42058355
+3783,Solana Beach,3700,13312,9115484
+3797,Uc San Diego,,,
+3713,Vista,3700,98560,48380231
