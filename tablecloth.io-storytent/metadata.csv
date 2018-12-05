@@ -1,28 +1,28 @@
-Declare,metatab-latest,,,
-Title,StoryTent Utilization,,,
-Description,"Processed StoryTent utilization data, with checkins mapped to checkouts. It is",,,
-Description,assumed checkins and checkouts are on the same day. All checkins and outs are,,,
-Description,"collected for each date, and the first checkin for each date is linked to the",,,
-Description,last checkout.,,,
-Identifier,d59ce6a1-aa0a-4abb-a9b6-5072e14ad9e6,,,
-Name,tablecloth.io-storytent-5,,,
-Dataset,storytent,,,
-Origin,tablecloth.io,,,
-Version,5,,,
-Created,2018-07-09T18:24:46,,,
-Modified,2018-09-03T21:49:51,,,
-,,,,
+Declare,metatab-latest
+Title,StoryTent Utilization
+Description,"Processed StoryTent utilization data, with checkins mapped to checkouts. It is"
+Description,assumed checkins and checkouts are on the same day. All checkins and outs are
+Description,"collected for each date, and the first checkin for each date is linked to the"
+Description,last checkout.
+Identifier,d59ce6a1-aa0a-4abb-a9b6-5072e14ad9e6
+Name,tablecloth.io-storytent-5
+Dataset,storytent
+Origin,tablecloth.io
+Version,5
+Created,2018-07-09T18:24:46
+Modified,2018-12-03T04:35:43
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git
+
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-,,,,
+
 Section,Documentation,Title,Description,
 Includedocumentation,file:README.md,README,,
 Note,Rows without Locations are given the location of “NA”,,,
-,,,,
-,,,,
-,,,,
+
 Section,References,Name,Description,
-Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#0,aug18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#0,sept18,,
+Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#133386948,aug18,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#960517181,july18,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#650411090,june18,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#940361384,may18,,
@@ -33,11 +33,12 @@ Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#658833098,jan18,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#1803153536,dec17,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#1508457028,nov17,,
 Reference,gs://1BNe8Mw4TZnmgl_FXf4-cuD7WOFH2PNG50-ipR0d0PaM#573665976,oct17,,
-,,,,
+
 Section,Resources,Name,Description,
+Datafile,gs://1FRYp3zxybRMODV450vUaY_KxwH4z5aNNKrQrkLTt_fw#1058785181,oct18,"October sheet, different from Oct17 to Sept18",
 Datafile,python:pylib#combine_sources,source,Original source data,
 Datafile,python:pylib#row_generator,checkins,"Processed data, with checkins linked to checkouts",
-,,,,
+
 Section,Schema,DataType,AltName,Description
 Table,checkins,,,
 Table.Column,type,string,,"'c’ for check-in + check-out, ‘i’ for only check in, ‘o’ for only checkout"
@@ -76,3 +77,19 @@ Table.Column,Checkout QR,string,checkout_qr_url,
 Table.Column,NOTES,string,notes,
 Table.Column,QR Checkin (Google),string,qr_checkin_url,
 Table.Column,QR Checkout (Google),string,qr_checkout_url,
+Table,oct18,,,
+Table.Column,#,string,,
+Table.Column,Which location?,string,which_location,
+Table.Column,What's your first name?,text,what_s_your_first_name,
+Table.Column,What's your last name?,text,what_s_your_last_name,
+Table.Column,What's your gender?,string,what_s_your_gender,
+Table.Column,What grade are you in?,string,what_grade_are_you_in,
+Table.Column,When is your birthday?,string,when_is_your_birthday,
+Table.Column,Which emoji describes how you feel about reading right now?,string,which_emoji_describes_how_you_feel_about_reading_right_now,
+Table.Column,Start Date (UTC),string,start_date_utc,
+Table.Column,Submit Date (UTC),datetime,submit_date_utc,
+Table.Column,Network ID,string,network_id,
+Table.Column,Form,string,form,
+Table.Column,ClientID,text,clientid,
+Table.Column,Tablecloth Link,text,tablecloth_link,
+Table.Column,QR Code Link,string,qr_code_link,
