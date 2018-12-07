@@ -1,32 +1,39 @@
-Declare,metatab-latest,,,
-Title,Small Area Estimates for Diabetes in San Diego,,,
-Description,,,,
-Identifier,119914cb-798e-4e9f-ad8a-22d09cfcefac,,,
-Name,sandiegodata.org-diabetes_sae-1,,,
-Dataset,diabetes_sae,,,
-Origin,sandiegodata.org,,,
-Time,,,,
-Space,,,,
-Grain,,,,
-Variant,,,,
-Version,1,,,
-Created,2018-12-05T23:54:30,,,
-Modified,2018-12-05T23:54:30,,,
-Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,
-,,,,
+Declare,metatab-latest
+Title,Small Area Estimates for Diabetes in San Diego
+Description,"Tract estimates for diabetes by race, age, sex and poverty status, from"
+Description,2015-2017 CHIS.
+Identifier,119914cb-798e-4e9f-ad8a-22d09cfcefac
+Name,sandiegodata.org-diabetes_sae-1
+Dataset,diabetes_sae
+Origin,sandiegodata.org
+Time,
+Space,
+Grain,
+Variant,
+Version,1
+Created,2018-12-05T23:54:30
+Modified,2018-12-07T05:35:04
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git
+
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-,,,,
+
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-,,,,
+
 Section,References,Name,Description,
-Reference,index:healthpolicy.ucla.edu-chis-adult-1#rasp_diabetes_reduced,rasp_diabetes,"Diabetes probabilities, by age, race, sex and poverty status",
-Reference,index:sandiegodata.org-rasp-1#rasp_tracts_sd,rasp_tracts,"Race, age, sex and poverty status of population by tract in San Diego County
-",
-,,,,
-,,,,
-,,,,
+Reference,index:healthpolicy.ucla.edu-chis-adult-1#rasp_diabetes,rasp_diabetes,"Diabetes probabilities, by age, race, sex and poverty status",
+Reference,index:sandiegodata.org-rasp-1#rasp_tracts_sd,rasp_tracts,"Race, age, sex and poverty status of population by tract in San Diego County",
+
 Section,Resources,Name,Description,
-,,,,
+Datafile,notebooks/Diabetes.ipynb#tract_diabetes,tract_diabetes,Diabetes rates per tract per race/ethnicity,
+
 Section,Schema,DataType,AltName,Description
+Table,tract_diabetes,,,
+Table.Column,geoid,string,,
+Table.Column,asian,number,,
+Table.Column,black,string,,
+Table.Column,hisp,number,,
+Table.Column,nhwhite,number,,
+Table.Column,other,number,,
+Table.Column,total,number,,

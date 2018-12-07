@@ -1,19 +1,19 @@
-Declare,metatab-latest
-Title,"CHIS California Health Interview Survey, Adults"
-Description,Documentation and Reference Links to CHIS files.
-Identifier,bbc92462-293c-4e42-8af4-6c2afc761b73
-Name,healthpolicy.ucla.edu-chis-adult-1
-Dataset,chis
-Origin,healthpolicy.ucla.edu
-Variant,adult
-Version,1
-Created,2018-11-19T03:35:26
-Modified,2018-12-06T21:55:34
-Giturl,https://github.com/SDRDLAnalysts/data-projects.git
-
+Declare,metatab-latest,,,,,
+Title,"CHIS California Health Interview Survey, Adults",,,,,
+Description,Documentation and Reference Links to CHIS files.,,,,,
+Identifier,bbc92462-293c-4e42-8af4-6c2afc761b73,,,,,
+Name,healthpolicy.ucla.edu-chis-adult-1,,,,,
+Dataset,chis,,,,,
+Origin,healthpolicy.ucla.edu,,,,,
+Variant,adult,,,,,
+Version,1,,,,,
+Created,2018-11-19T03:35:26,,,,,
+Modified,2018-12-07T00:50:35,,,,,
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,,,
+,,,,,,
 Section,Contacts,Email,Organization,Url,,
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com,,
-
+,,,,,,
 Section,Documentation,Title,Age,Year,Description,Description
 Documentation,file:README.md,README,,,,
 Homepage,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Pages/2017.aspx,homepage,,,Data download home page.,
@@ -23,31 +23,26 @@ Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Docume
 Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS%202015%20PUF%20Data%20Dictionary%20-%20Adult%20Oct%202018.pdf,dd_adult_2015,adult,2015,"Data dictionary, Adult, 2015",
 Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS%202014%20PUF%20Data%20Dictionary%20-%20Adult%20Oct%202018.pdf,dd_adult_2014,adult,2014,"Data dictionary, Adult, 2014",
 Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS%202013%20Data%20Dictionary%20PUF%20-%20Adult_June%202016.pdf,dd_adult_2013,adult,2013,"Data dictionary, Adult, 2013",
-
+,,,,,,
 Section,References,Name,Age,Year,Description,
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/adult_2017_stata.zip#ADULT.dta,adult_2017,adult,2017,"CHIS, Adult 2017",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS16_adult_stata.zip#ADULT.dta,adult_2016,adult,2016,"CHIS, Adult 2016",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS15_adult_stata.zip#ADULT.dta,adult_2015,adult,2015,"CHIS, Adult 2015",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/chis14_adult_stata.zip#ADULT.dta,adult_2014,adult,2014,"CHIS, Adult 2014",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/chis13_adult_stata.zip#ADULT.dta,adult_2013,adult,2013,"CHIS, Adult 2013",
-
+,,,,,,
 Section,Resources,Name,Age,Year,Description,
 Datafile,notebooks/DiabetesProbabilities.ipynb#rasp_diabetes,rasp_diabetes,adult,2013-2017,"Diabetes probabilities for age, race, sex, and poverty level ratio, for all CHIS respondents in California",
-
+,,,,,,
 Section,Schema,DataType,Altname,Description,,
-Table,x_rasp_diabetes,,,,,
-Table.Column,age,integer,,"Age in years, from 18 to 85",,
-Table.Column,pov,integer,,"Ratio of income to federal poverty level, from 0 to 400%, in 10% increments.",,
-Table.Column,sex,integer,,"1 for male, 0 for female.",,
-Table.Column,raceeth,string,,Non-hispanic race or Latino of any race.,,
-Table.Column,prob,number,,,,
 Table,rasp_diabetes,,,,,
 Table.Column,raceeth,string,,,,
 Table.Column,age_group,string,,,,
 Table.Column,sex,integer,,,,
 Table.Column,pov,integer,,,,
-Table.Column,group_pop,number,,,,
-Table.Column,estimate,number,,,,
+Table.Column,group_pop,integer,,,,
+Table.Column,estimate,integer,,,,
 Table.Column,std,number,,,,
 Table.Column,rate,number,,,,
 Table.Column,imputed_rate,number,,,,
+Table.Column,imputed_estimate,integer,,,,
