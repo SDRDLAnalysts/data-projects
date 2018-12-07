@@ -8,7 +8,7 @@ Origin,healthpolicy.ucla.edu
 Variant,adult
 Version,1
 Created,2018-11-19T03:35:26
-Modified,2018-12-04T17:29:19
+Modified,2018-12-06T21:55:34
 Giturl,https://github.com/SDRDLAnalysts/data-projects.git
 
 Section,Contacts,Email,Organization,Url,,
@@ -32,28 +32,22 @@ Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/chis13_adult_stata.zip#ADULT.dta,adult_2013,adult,2013,"CHIS, Adult 2013",
 
 Section,Resources,Name,Age,Year,Description,
-Datafile,notebooks/DiabetesProbabilities.ipynb#rasp,rasp_diabetes,adult,2013-2017,"Diabetes probabilities for age, race, sex, and poverty level ratio",
-Datafile,notebooks/DiabetesProbabilities.ipynb#rasp_reduced,rasp_diabetes_reduced,adult,2013-2017,"Like rasp_diabetes, but with two-level poverty and census age ranges",
+Datafile,notebooks/DiabetesProbabilities.ipynb#rasp_diabetes,rasp_diabetes,adult,2013-2017,"Diabetes probabilities for age, race, sex, and poverty level ratio, for all CHIS respondents in California",
 
-Section,Schema,DataType,Description,,,
+Section,Schema,DataType,Altname,Description,,
+Table,x_rasp_diabetes,,,,,
+Table.Column,age,integer,,"Age in years, from 18 to 85",,
+Table.Column,pov,integer,,"Ratio of income to federal poverty level, from 0 to 400%, in 10% increments.",,
+Table.Column,sex,integer,,"1 for male, 0 for female.",,
+Table.Column,raceeth,string,,Non-hispanic race or Latino of any race.,,
+Table.Column,prob,number,,,,
 Table,rasp_diabetes,,,,,
-Table.Column,age,integer,"Age in years, from 18 to 85",,,
-Table.Column,pov,integer,"Ratio of income to federal poverty level, from 0 to 400%, in 10% increments.",,,
-Table.Column,sex,integer,"1 for male, 0 for female.",,,
-Table.Column,raceeth,string,Non-hispanic race or Latino of any race.,,,
-Table.Column,prob,number,,,,
-Table,rasp_diabetes_reduced,,,,,
-Table.Column,age,number,,,,
-Column.Altname,
-Table.Column,age_min,integer,,,,
-Column.Altname,
-Table.Column,age_max,integer,,,,
-Column.Altname,
-Table.Column,pov,integer,,,,
-Column.Altname,
-Table.Column,sex,integer,,,,
-Column.Altname,
 Table.Column,raceeth,string,,,,
-Column.Altname,
-Table.Column,prob,number,,,,
-Column.Altname,
+Table.Column,age_group,string,,,,
+Table.Column,sex,integer,,,,
+Table.Column,pov,integer,,,,
+Table.Column,group_pop,number,,,,
+Table.Column,estimate,number,,,,
+Table.Column,std,number,,,,
+Table.Column,rate,number,,,,
+Table.Column,imputed_rate,number,,,,
