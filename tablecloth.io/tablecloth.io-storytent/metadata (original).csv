@@ -1,0 +1,56 @@
+Declare,metatab-latest
+Title,StoryTent Utilization
+Description,"Processed StoryTent utilization data, with checkins mapped to checkouts. It is"
+Description,assumed checkins and checkouts are on the same day. All checkins and outs are
+Description,"collected for each date, and the first checkin for each date is linked to the"
+Description,last checkout.
+Identifier,d59ce6a1-aa0a-4abb-a9b6-5072e14ad9e6
+Name,tablecloth.io-storytent-4
+Dataset,storytent
+Origin,tablecloth.io
+Version,4
+Created,2018-07-09T18:24:46
+Modified,2018-09-01T19:53:51
+
+Section,Contacts,Email,Organization,Url
+Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
+
+Section,Documentation,Title,Description,
+Includedocumentation,file:README.md,README,,
+
+Section,Resources,Name,Description,
+Datafile,gs://1FRYp3zxybRMODV450vUaY_KxwH4z5aNNKrQrkLTt_fw#1714436642,source,Original source data,
+Datafile,python:pylib#row_generator,checkins,"Processed data, with checkins linked to checkouts",
+
+Section,Schema,DataType,AltName,Description
+Table,source,,,
+Table.Column,Location,string,location,
+Table.Column,First_Name,string,first_name,
+Table.Column,Last_Name,text,last_name,
+Table.Column,Full_Name,text,full_name,
+Table.Column,Gender,string,gender,
+Table.Column,Grade_Level,integer,grade_level,
+Table.Column,Birthdate,date,birthdate,
+Table.Column,Checkin_Feeling,string,checkin_feeling,
+Table.Column,Checkout_Feeling,string,checkout_feeling,
+Table.Column,Checkin_Timestamp,datetime,checkin_timestamp,
+Table.Column,Checkout_Timestamp,datetime,checkout_timestamp,
+Table.Column,Session_Length,string,session_length,
+Table.Column,ClientID,string,clientid,
+Table.Column,SessionID,string,sessionid,
+Table,checkins,,,
+Table.Column,type,string,,"'c’ for check-in + check-out, ‘i’ for only check in, ‘o’ for only checkout"
+Table.Column,location,string,,Name of StoryTent site
+Table.Column,time_in,datetime,,Check-in time
+Table.Column,time_out,datetime,,Check-out time
+Table.Column,duration,integer,,Duration of visit in minutes
+Table.Column,feeling_in,string,,Check-in feeling
+Table.Column,feeling_out,string,,Check-out feeling
+Table.Column,first_name,string,,User first name
+Table.Column,last_name,text,,User last name
+Table.Column,full_name,text,,User full name
+Table.Column,name_key,text,,Text key built form name and birthdate
+Table.Column,user_id,string,,"User id, the md5 of name_key"
+Table.Column,session_id,string,,"Session id, unique uuid per row"
+Table.Column,checkin_row_no,integer,,Row number of the source row used for the checkin
+Table.Column,checkout_row_no,integer,,Row number of the source row used for the checkout
