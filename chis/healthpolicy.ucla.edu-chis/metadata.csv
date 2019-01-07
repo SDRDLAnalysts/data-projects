@@ -25,6 +25,7 @@ Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Docume
 Documentation,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS%202013%20Data%20Dictionary%20PUF%20-%20Adult_June%202016.pdf,dd_adult_2013,adult,2013,"Data dictionary, Adult, 2013",
 ,,,,,,
 Section,References,Name,Age,Year,Description,
+Reference,datadict.csv,data_dict_17,adult,2017,Data Dictionary in CSV format for 2017,
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/adult_2017_stata.zip#ADULT.dta,adult_2017,adult,2017,"CHIS, Adult 2017",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS16_adult_stata.zip#ADULT.dta,adult_2016,adult,2016,"CHIS, Adult 2016",
 Reference,http://healthpolicy.ucla.edu/chis/data/public-use-data-file/Documents/CHIS15_adult_stata.zip#ADULT.dta,adult_2015,adult,2015,"CHIS, Adult 2015",
