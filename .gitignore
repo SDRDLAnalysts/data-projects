@@ -40,4 +40,8 @@ _packages
 .DS_Store
 .~lock.metadata.csv#
 .ipynb_checkpoints
+*-save.ipynb
+*-errors.ipynb
+*-executed.ipynb
+notebooks/*.csv
 
