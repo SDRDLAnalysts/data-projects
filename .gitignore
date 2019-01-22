@@ -43,5 +43,5 @@ _packages
 *-save.ipynb
 *-errors.ipynb
 *-executed.ipynb
-notebooks/*.csv
-
+**/notebooks/*.csv
+new-notebook.ipynb
