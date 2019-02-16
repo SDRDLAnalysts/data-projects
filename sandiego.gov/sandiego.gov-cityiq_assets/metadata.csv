@@ -1,31 +1,33 @@
-Declare,metatab-latest
-Title,San Diego City IQ Assets and Locations
-Description,All assets types extracted form the San Diego City Iq system
-Identifier,1f8c2ddf-73d6-4777-8442-c5df967c1649
-Name,sandiego.gov-cityiq_objects-1
-Dataset,cityiq_objects
-Origin,sandiego.gov
-Time,
-Space,
-Grain,
-Variant,
-Version,1
-Created,2019-02-12T05:02:13
-Modified,2019-02-12T06:16:04
-Giturl,https://github.com/SDRDLAnalysts/data-projects.git
-
+Declare,metatab-latest,,,
+Title,San Diego City IQ Assets and Locations,,,
+Description,All assets types extracted form the San Diego City Iq system,,,
+Identifier,1f8c2ddf-73d6-4777-8442-c5df967c1649,,,
+Name,sandiego.gov-cityiq_assets-1,,,
+Dataset,cityiq_objects,,,
+Origin,sandiego.gov,,,
+Time,,,,
+Space,,,,
+Grain,,,,
+Variant,,,,
+Version,1,,,
+Created,2019-02-12T05:02:13,,,
+Modified,2019-02-12T05:51:42,,,
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,
+,,,,
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-
+,,,,
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-
+,,,,
 Section,References,Name,Description,
-
+Reference,index:sangis.org-roads-sandiego#all_roads,sdroads,Roads in San Diego ,
+Reference,metapack+http://library.metatab.org/sandiegodata.org-geography-2018.csv,geography,San Diego tracts and communities,
+,,,,
 Section,Resources,Name,Description,
 Datafile,notebooks/ExtractAssets.ipynb#assets,assets,All assets,
 Datafile,notebooks/ExtractAssets.ipynb#locations,locations,"All locations: walkways, traffic lanes and parking zones",
-
+,,,,
 Section,Schema,DataType,AltName,Description
 Table,assets,,,
 Table.Column,assetUid,string,assetuid,
