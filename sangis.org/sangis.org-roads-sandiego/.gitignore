@@ -1,0 +1,9 @@
+.ipynb_checkpoints
+*-save.ipynb
+*-errors.ipynb
+*-executed.ipynb
+**/notebooks/*.csv
+new-notebook.ipynb
+
+data/Roads_All.zip
+
