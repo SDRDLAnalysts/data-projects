@@ -7,3 +7,9 @@ documentation](https://ie-cities-docs.run.aws-usw02-pr.ice.predix.io/#c_overview
 extracted using the [cityiq Python package](https://pypi.org/project/cityiq/).
 See the ExtractAssets.ipynb notebook for the extract process.
 
+## Versions
+
+1. Development version
+2. Development version
+3. First release
+1. Added tract and community names

@@ -1,34 +1,35 @@
-Declare,metatab-latest,,,
-Title,San Diego City IQ Assets and Locations,,,
-Description,All assets types extracted form the San Diego City Iq system,,,
-Identifier,1f8c2ddf-73d6-4777-8442-c5df967c1649,,,
-Name,sandiego.gov-cityiq_objects-2,,,
-Dataset,cityiq_objects,,,
-Origin,sandiego.gov,,,
-Time,,,,
-Space,,,,
-Grain,,,,
-Variant,,,,
-Version,2,,,
-Tag,cityiq,,,
-Created,2019-02-12T05:02:13,,,
-Modified,2019-02-16T06:33:26,,,
-Giturl,https://github.com/SDRDLAnalysts/data-projects.git,,,
-,,,,
+Declare,metatab-latest
+Title,San Diego City IQ Assets and Locations
+Description,All assets types extracted form the San Diego City Iq system
+Identifier,1f8c2ddf-73d6-4777-8442-c5df967c1649
+Name,sandiego.gov-cityiq_objects-4
+Dataset,cityiq_objects
+Origin,sandiego.gov
+Time,
+Space,
+Grain,
+Variant,
+Version,4
+Tag,cityiq
+Created,2019-02-12T05:02:13
+Modified,2019-02-18T01:11:25
+Giturl,https://github.com/SDRDLAnalysts/data-projects.git
+
 Section,Contacts,Email,Organization,Url
 Wrangler,Eric Busboom,eric@civicknowledge.com,Civic Knowledge,http://civicknowledge.com
-,,,,
+
 Section,Documentation,Title,Description,
 Documentation,file:README.md,README,,
-,,,,
+
 Section,References,Name,Description,
 Reference,index:sangis.org-roads-sandiego#all_roads,sdroads,Roads in San Diego,
-Reference,metapack+http://library.metatab.org/sandiegodata.org-geography-2018.csv,geography,San Diego tracts and communities,
-,,,,
+Reference,metapack+http://library.metatab.org/sandiegodata.org-geography-2018.csv#tract_boundaries,tract_boundaries,San Diego tracts and communities,
+Reference,metapack+http://library.metatab.org/sandiegodata.org-geography-2018.csv#sd_community_boundaries,sd_community_boundaries,San Diego tracts and communities,
+
 Section,Resources,Name,Description,
 Datafile,notebooks/ExtractAssets.ipynb#assets,assets,All assets,
 Datafile,notebooks/ExtractAssets.ipynb#locations,locations,"All locations: walkways, traffic lanes and parking zones",
-,,,,
+
 Section,Schema,DataType,AltName,Description
 Table,assets,,,
 Table.Column,assetUid,string,assetuid,
@@ -36,6 +37,8 @@ Table.Column,assetType,string,assettype,
 Table.Column,parentAssetUid,string,parentassetuid,
 Table.Column,mediaType,string,mediatype,
 Table.Column,events,string,,What events the asset generates
+Table.Column,community_name,string,,Name of San Diego planning community where asset is located
+Table.Column,tract_geoid,string,,Geoid of the tract where the asset is located
 Table.Column,roadsegid,integer,,SANDAG road segment id. Links to the SANDAG roads data
 Table.Column,speed,integer,,Speed limit on the road segment
 Table.Column,oneway,string,,Is the road segment one way?
@@ -47,6 +50,8 @@ Table,locations,,,
 Table.Column,locationUid,string,locationuid,
 Table.Column,locationType,string,locationtype,
 Table.Column,parentLocationUid,string,parentlocationuid,
+Table.Column,community_name,string,,Name of San Diego planning community where location is located
+Table.Column,tract_geoid,string,,Geoid of the tract where the location is located
 Table.Column,roadsegid,integer,,SANDAG road segment id. Links to the SANDAG roads data
 Table.Column,speed,integer,,Speed limit on the road segment
 Table.Column,oneway,string,,Is the road segment one way?
