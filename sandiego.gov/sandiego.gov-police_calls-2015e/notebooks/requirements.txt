@@ -1,7 +1,0 @@
-matplotlib
-pandas
-geopandas
-seaborn
-pysal
-
-
